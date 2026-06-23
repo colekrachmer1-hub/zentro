@@ -6,6 +6,7 @@ import DashboardLayout from '@/components/DashboardLayout'
 export default function SettingsPage() {
   const [openaiKey, setOpenaiKey] = useState('')
   const [anthropicKey, setAnthropicKey] = useState('')
+  const [serpapiKey, setSerpapiKey] = useState('')
   const [status, setStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle')
   const [message, setMessage] = useState('')
 
@@ -15,6 +16,7 @@ export default function SettingsPage() {
       .then(d => {
         if (d.openai_key) setOpenaiKey(d.openai_key)
         if (d.anthropic_key) setAnthropicKey(d.anthropic_key)
+        if (d.serpapi_key) setSerpapiKey(d.serpapi_key)
       })
   }, [])
 
@@ -26,7 +28,11 @@ export default function SettingsPage() {
     const res = await fetch('/api/settings', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ openai_key: openaiKey, anthropic_key: anthropicKey }),
+      body: JSON.stringify({
+        openai_key: openaiKey,
+        anthropic_key: anthropicKey,
+        serpapi_key: serpapiKey,
+      }),
     })
     const data = await res.json()
 
@@ -42,16 +48,16 @@ export default function SettingsPage() {
 
   const openaiConnected = openaiKey.includes('•')
   const anthropicConnected = anthropicKey.includes('•')
+  const serpapiConnected = serpapiKey.includes('•')
 
   return (
     <DashboardLayout>
       <div className="mb-8">
         <h1 className="text-2xl font-bold text-gray-900">Settings</h1>
-        <p className="text-sm text-gray-500 mt-1">Manage your account and AI model API keys</p>
+        <p className="text-sm text-gray-500 mt-1">Manage your account and API keys</p>
       </div>
 
       <div className="max-w-xl space-y-5">
-        {/* API Keys */}
         <form onSubmit={handleSave} className="card p-6">
           <h2 className="font-semibold text-gray-900 mb-1">AI Model API Keys</h2>
           <p className="text-sm text-gray-500 mb-6">
@@ -106,6 +112,33 @@ export default function SettingsPage() {
                 </a>
               </p>
             </div>
+
+            {/* SerpAPI */}
+            <div className="pt-5 border-t border-gray-100">
+              <div className="flex items-center justify-between mb-1.5">
+                <div>
+                  <label className="text-sm font-medium text-gray-700">SerpAPI Key</label>
+                  <span className="ml-2 text-xs px-2 py-0.5 bg-purple-50 text-purple-600 rounded-full font-medium">Web Search</span>
+                </div>
+                <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${serpapiConnected ? 'bg-emerald-50 text-emerald-700' : 'bg-gray-100 text-gray-400'}`}>
+                  {serpapiConnected ? '● Connected' : '○ Not set'}
+                </span>
+              </div>
+              <input
+                type="password"
+                className="input font-mono text-sm"
+                placeholder="your-serpapi-key..."
+                value={serpapiKey}
+                onChange={e => setSerpapiKey(e.target.value)}
+                autoComplete="off"
+              />
+              <p className="text-xs text-gray-400 mt-1">
+                Enables your Research AI to search the web in real time. Get a key at{' '}
+                <a href="https://serpapi.com/manage-api-key" target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">
+                  serpapi.com
+                </a>
+              </p>
+            </div>
           </div>
 
           <div className="flex items-center gap-3 mt-6 pt-5 border-t border-gray-100">
@@ -124,9 +157,8 @@ export default function SettingsPage() {
           </div>
         </form>
 
-        {/* Info box */}
         <div className="rounded-xl border border-blue-100 bg-blue-50 p-4 text-sm text-blue-700">
-          <strong>How it works:</strong> When you run a task, Zentro uses your saved API key to call the AI model directly. You pay OpenAI or Anthropic directly — Zentro never marks up usage.
+          <strong>How it works:</strong> When you run a task, Zentro uses your saved API keys directly. SerpAPI lets Research AI workers search the web before responding. You pay providers directly — Zentro never marks up usage.
         </div>
       </div>
     </DashboardLayout>

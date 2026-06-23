@@ -5,8 +5,29 @@ import { createClient } from '@/lib/supabase/server'
 
 const OPENAI_INPUT_COST  = 0.15  / 1_000_000   // gpt-4o-mini
 const OPENAI_OUTPUT_COST = 0.60  / 1_000_000
-const CLAUDE_INPUT_COST  = 3.00  / 1_000_000   // claude-3-5-haiku
+const CLAUDE_INPUT_COST  = 3.00  / 1_000_000   // claude-haiku
 const CLAUDE_OUTPUT_COST = 15.00 / 1_000_000
+
+async function searchWeb(query: string, serpapiKey: string): Promise<string> {
+  const params = new URLSearchParams({
+    q: query,
+    api_key: serpapiKey,
+    num: '5',
+    engine: 'google',
+  })
+  const res = await fetch(`https://serpapi.com/search?${params}`)
+  if (!res.ok) return ''
+  const data = await res.json()
+
+  const results = (data.organic_results || []).slice(0, 5)
+  if (!results.length) return ''
+
+  return results
+    .map((r: { title: string; snippet: string; link: string }, i: number) =>
+      `[${i + 1}] ${r.title}\n${r.snippet}\nSource: ${r.link}`
+    )
+    .join('\n\n')
+}
 
 export async function POST(req: NextRequest) {
   try {
@@ -34,15 +55,15 @@ export async function POST(req: NextRequest) {
     // Fetch user's API keys
     const { data: settings } = await supabase
       .from('user_settings')
-      .select('openai_key, anthropic_key')
+      .select('openai_key, anthropic_key, serpapi_key')
       .eq('user_id', user.id)
       .single()
 
     const model: string = employee.model || 'openai'
 
-    // Resolve which API key to use
     const openaiKey    = settings?.openai_key    || process.env.OPENAI_API_KEY
     const anthropicKey = settings?.anthropic_key || process.env.ANTHROPIC_API_KEY
+    const serpapiKey   = settings?.serpapi_key   || process.env.SERPAPI_API_KEY
 
     if (model === 'openai' && !openaiKey) {
       return NextResponse.json({
@@ -73,6 +94,17 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Failed to create task' }, { status: 500 })
     }
 
+    // SerpAPI web search for Research employees (if key is set)
+    let searchContext = ''
+    const isResearch = employee.role === 'Research'
+    if (isResearch && serpapiKey) {
+      searchContext = await searchWeb(prompt.trim(), serpapiKey)
+    }
+
+    const searchSection = searchContext
+      ? `\n\nWEB SEARCH RESULTS (use these as your primary source of truth):\n${searchContext}\n`
+      : ''
+
     const systemPrompt = `You are an AI employee with the following profile:
 
 NAME: ${employee.name}
@@ -80,8 +112,8 @@ ROLE: ${employee.role}
 GOAL: ${employee.goal}
 
 ${employee.system_prompt}
-
-Complete the task given by the user. Return a clear, structured, and actionable response. Be specific and thorough.`
+${searchSection}
+Complete the task given by the user. Return a clear, structured, and actionable response. Be specific and thorough.${searchContext ? ' Cite the sources from the web search results where relevant.' : ''}`
 
     let response = ''
     let inputTokens = 0
@@ -146,11 +178,12 @@ Complete the task given by the user. Return a clear, structured, and actionable 
 
     // Log activity
     const modelLabel = model === 'claude' ? 'Claude' : 'GPT-4o-mini'
+    const searchLabel = searchContext ? ' + SerpAPI' : ''
     await supabase.from('activity_logs').insert({
       user_id: user.id,
       employee_id: employeeId,
       employee_name: employee.name,
-      message: `completed: "${prompt.trim().slice(0, 80)}${prompt.length > 80 ? '...' : ''}" via ${modelLabel}`,
+      message: `completed: "${prompt.trim().slice(0, 80)}${prompt.length > 80 ? '...' : ''}" via ${modelLabel}${searchLabel}`,
       type: 'task',
     })
 
