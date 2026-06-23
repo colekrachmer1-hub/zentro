@@ -21,25 +21,25 @@ export default async function EmployeesPage() {
     <DashboardLayout>
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">AI Employees</h1>
+          <h1 className="text-2xl font-bold text-gray-900">AI Workers</h1>
           <p className="text-sm text-gray-500 mt-1">
-            {employees?.length || 0} employees · {activeCount} active
+            {employees?.length || 0} workers · {activeCount} active
           </p>
         </div>
         <Link href="/employees/new" className="btn-primary">
-          + Hire Employee
+          + Add AI Worker
         </Link>
       </div>
 
       {(!employees || employees.length === 0) ? (
         <div className="card p-16 text-center">
-          <div className="text-5xl mb-4">🤖</div>
-          <h2 className="text-xl font-semibold text-gray-900 mb-2">No AI employees yet</h2>
+          <div className="text-5xl mb-4">👥</div>
+          <h2 className="text-xl font-semibold text-gray-900 mb-2">No AI workers yet</h2>
           <p className="text-gray-500 mb-6 max-w-sm mx-auto">
-            Create your first AI employee and assign them goals to get started.
+            Add your first AI worker and assign them a goal to get started.
           </p>
           <Link href="/employees/new" className="btn-primary">
-            + Create First Employee
+            + Add First AI Worker
           </Link>
         </div>
       ) : (
