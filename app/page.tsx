@@ -155,8 +155,8 @@ export default function LandingPage() {
 
           {/* Headline */}
           <h1 className="text-5xl md:text-6xl font-bold text-gray-900 tracking-tight leading-tight mb-5">
-            Hire AI Employees<br />
-            <span className="text-brand-600">That Work 24/7</span>
+            Your First AI Employee<br />
+            <span className="text-brand-600">Starts Working Today</span>
           </h1>
 
           <p className="text-xl text-gray-500 mb-10 max-w-xl mx-auto leading-relaxed">
