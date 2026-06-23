@@ -1,65 +1,132 @@
-import { redirect } from 'next/navigation'
-import { createClient } from '@/lib/supabase/server'
+'use client'
+
+import { useState, useEffect } from 'react'
 import DashboardLayout from '@/components/DashboardLayout'
 
-export const dynamic = 'force-dynamic'
+export default function SettingsPage() {
+  const [openaiKey, setOpenaiKey] = useState('')
+  const [anthropicKey, setAnthropicKey] = useState('')
+  const [status, setStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle')
+  const [message, setMessage] = useState('')
 
-export default async function SettingsPage() {
-  const supabase = createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) redirect('/login')
+  useEffect(() => {
+    fetch('/api/settings')
+      .then(r => r.json())
+      .then(d => {
+        if (d.openai_key) setOpenaiKey(d.openai_key)
+        if (d.anthropic_key) setAnthropicKey(d.anthropic_key)
+      })
+  }, [])
+
+  async function handleSave(e: React.FormEvent) {
+    e.preventDefault()
+    setStatus('saving')
+    setMessage('')
+
+    const res = await fetch('/api/settings', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ openai_key: openaiKey, anthropic_key: anthropicKey }),
+    })
+    const data = await res.json()
+
+    if (res.ok) {
+      setStatus('saved')
+      setMessage('API keys saved.')
+      setTimeout(() => setStatus('idle'), 3000)
+    } else {
+      setStatus('error')
+      setMessage(data.error || 'Failed to save.')
+    }
+  }
+
+  const openaiConnected = openaiKey.includes('•')
+  const anthropicConnected = anthropicKey.includes('•')
 
   return (
     <DashboardLayout>
       <div className="mb-8">
         <h1 className="text-2xl font-bold text-gray-900">Settings</h1>
-        <p className="text-sm text-gray-500 mt-1">Manage your account and AI worker configuration</p>
+        <p className="text-sm text-gray-500 mt-1">Manage your account and AI model API keys</p>
       </div>
 
-      <div className="max-w-2xl space-y-4">
-        {/* Account */}
-        <div className="card p-6">
-          <h2 className="font-semibold text-gray-900 mb-4">Account</h2>
-          <div className="space-y-3 text-sm">
-            <div className="flex items-center justify-between py-2 border-b border-gray-50">
-              <span className="text-gray-500">Email</span>
-              <span className="text-gray-900 font-medium">{user.email}</span>
-            </div>
-            <div className="flex items-center justify-between py-2 border-b border-gray-50">
-              <span className="text-gray-500">Plan</span>
-              <span className="px-2 py-0.5 bg-blue-50 text-blue-700 text-xs font-semibold rounded-full">Early Access</span>
-            </div>
-          </div>
-        </div>
-
+      <div className="max-w-xl space-y-5">
         {/* API Keys */}
-        <div className="card p-6">
-          <h2 className="font-semibold text-gray-900 mb-2">AI Model API Keys</h2>
-          <p className="text-sm text-gray-500 mb-4">Connect your own API keys to power your AI workers.</p>
-          <div className="space-y-3">
-            {[
-              { label: 'OpenAI API Key', placeholder: 'sk-...', connected: true },
-              { label: 'Anthropic (Claude) API Key', placeholder: 'sk-ant-...', connected: false },
-            ].map(key => (
-              <div key={key.label} className="flex items-center gap-3">
-                <div className="flex-1">
-                  <label className="text-xs font-medium text-gray-700 block mb-1">{key.label}</label>
-                  <input
-                    type="password"
-                    placeholder={key.placeholder}
-                    className="input text-sm"
-                    disabled
-                  />
-                </div>
-                <div className="pt-5">
-                  <span className={`text-xs px-2 py-1 rounded-full font-medium ${key.connected ? 'bg-emerald-50 text-emerald-700' : 'bg-gray-100 text-gray-400'}`}>
-                    {key.connected ? 'Connected' : 'Not set'}
-                  </span>
-                </div>
+        <form onSubmit={handleSave} className="card p-6">
+          <h2 className="font-semibold text-gray-900 mb-1">AI Model API Keys</h2>
+          <p className="text-sm text-gray-500 mb-6">
+            Your keys are stored securely and used to power your AI workers. Keys are never shared.
+          </p>
+
+          <div className="space-y-5">
+            {/* OpenAI */}
+            <div>
+              <div className="flex items-center justify-between mb-1.5">
+                <label className="text-sm font-medium text-gray-700">OpenAI API Key</label>
+                <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${openaiConnected ? 'bg-emerald-50 text-emerald-700' : 'bg-gray-100 text-gray-400'}`}>
+                  {openaiConnected ? '● Connected' : '○ Not set'}
+                </span>
               </div>
-            ))}
+              <input
+                type="password"
+                className="input font-mono text-sm"
+                placeholder="sk-..."
+                value={openaiKey}
+                onChange={e => setOpenaiKey(e.target.value)}
+                autoComplete="off"
+              />
+              <p className="text-xs text-gray-400 mt-1">
+                Get your key at{' '}
+                <a href="https://platform.openai.com/api-keys" target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">
+                  platform.openai.com/api-keys
+                </a>
+              </p>
+            </div>
+
+            {/* Anthropic */}
+            <div>
+              <div className="flex items-center justify-between mb-1.5">
+                <label className="text-sm font-medium text-gray-700">Anthropic (Claude) API Key</label>
+                <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${anthropicConnected ? 'bg-emerald-50 text-emerald-700' : 'bg-gray-100 text-gray-400'}`}>
+                  {anthropicConnected ? '● Connected' : '○ Not set'}
+                </span>
+              </div>
+              <input
+                type="password"
+                className="input font-mono text-sm"
+                placeholder="sk-ant-..."
+                value={anthropicKey}
+                onChange={e => setAnthropicKey(e.target.value)}
+                autoComplete="off"
+              />
+              <p className="text-xs text-gray-400 mt-1">
+                Get your key at{' '}
+                <a href="https://console.anthropic.com/settings/keys" target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">
+                  console.anthropic.com
+                </a>
+              </p>
+            </div>
           </div>
-          <p className="text-xs text-gray-400 mt-3">API key management coming in the next release.</p>
+
+          <div className="flex items-center gap-3 mt-6 pt-5 border-t border-gray-100">
+            <button
+              type="submit"
+              disabled={status === 'saving'}
+              className="btn-primary px-5 py-2.5 disabled:opacity-60"
+            >
+              {status === 'saving' ? 'Saving...' : 'Save API Keys'}
+            </button>
+            {message && (
+              <span className={`text-sm font-medium ${status === 'saved' ? 'text-emerald-600' : 'text-red-500'}`}>
+                {status === 'saved' ? '✓ ' : ''}{message}
+              </span>
+            )}
+          </div>
+        </form>
+
+        {/* Info box */}
+        <div className="rounded-xl border border-blue-100 bg-blue-50 p-4 text-sm text-blue-700">
+          <strong>How it works:</strong> When you run a task, Zentro uses your saved API key to call the AI model directly. You pay OpenAI or Anthropic directly — Zentro never marks up usage.
         </div>
       </div>
     </DashboardLayout>
