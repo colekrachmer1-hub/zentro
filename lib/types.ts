@@ -1,5 +1,6 @@
 export type EmployeeRole = 'SDR' | 'Research' | 'Support' | 'Analyst'
 export type EmployeeStatus = 'active' | 'inactive'
+export type EmployeeModel = 'openai' | 'claude'
 export type TaskStatus = 'pending' | 'completed' | 'failed'
 export type LogType = 'info' | 'task' | 'system' | 'error'
 
@@ -10,6 +11,7 @@ export interface Employee {
   role: EmployeeRole
   goal: string
   system_prompt: string
+  model: EmployeeModel
   status: EmployeeStatus
   performance_score: number
   created_at: string

@@ -12,7 +12,7 @@ export default async function DashboardPage() {
 
   // Fetch stats in parallel
   const [employeesRes, tasksRes, logsRes] = await Promise.all([
-    supabase.from('employees').select('id, status').eq('user_id', user.id),
+    supabase.from('employees').select('id, status, role').eq('user_id', user.id),
     supabase.from('tasks').select('id, status, cost_estimate').eq('user_id', user.id),
     supabase
       .from('activity_logs')
@@ -60,11 +60,11 @@ export default async function DashboardPage() {
           sub={`${tasks.length} total`}
         />
         <StatCard
-          label="Est. Value Generated"
-          value={completedTasks > 0 ? `$${(completedTasks * 4.2).toLocaleString()}` : '$0'}
-          icon="📈"
+          label="Departments"
+          value={new Set(employees.map((e: {role: string}) => e.role)).size}
+          icon="🏢"
           color="text-purple-600"
-          sub="vs hiring humans"
+          sub="active teams"
         />
         <StatCard
           label="AI Costs"

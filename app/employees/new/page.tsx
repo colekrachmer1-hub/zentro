@@ -84,6 +84,7 @@ export default function NewEmployeePage() {
         user_id: user.id,
         name: form.name,
         role: form.role,
+        model: form.model,
         goal: form.goal,
         system_prompt: form.system_prompt,
         status: 'active',

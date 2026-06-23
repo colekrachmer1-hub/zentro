@@ -112,6 +112,15 @@ export default function EmployeeDetailPage() {
                 </span>
               </div>
               <div>
+                <div className="text-xs text-gray-400 uppercase tracking-wide mb-1">Brain</div>
+                <div className="flex items-center gap-1.5">
+                  <span className="text-sm">🧠</span>
+                  <span className="text-sm text-gray-700 font-medium">
+                    {employee.model === 'claude' ? 'Claude (Anthropic)' : 'GPT-4o-mini (OpenAI)'}
+                  </span>
+                </div>
+              </div>
+              <div>
                 <div className="text-xs text-gray-400 uppercase tracking-wide mb-1">Goal</div>
                 <p className="text-gray-700">{employee.goal}</p>
               </div>
