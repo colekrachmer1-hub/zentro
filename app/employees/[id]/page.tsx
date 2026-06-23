@@ -116,7 +116,7 @@ export default function EmployeeDetailPage() {
                 <div className="flex items-center gap-1.5">
                   <span className="text-sm">🧠</span>
                   <span className="text-sm text-gray-700 font-medium">
-                    {employee.model === 'claude' ? 'Claude (Anthropic)' : 'GPT-4o-mini (OpenAI)'}
+                    {employee.model === 'claude' ? 'Claude (Anthropic)' : employee.model === 'serpapi' ? 'SerpAPI + GPT-4o-mini' : 'GPT-4o-mini (OpenAI)'}
                   </span>
                 </div>
               </div>

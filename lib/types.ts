@@ -1,6 +1,6 @@
 export type EmployeeRole = 'SDR' | 'Research' | 'Support' | 'Analyst'
 export type EmployeeStatus = 'active' | 'inactive'
-export type EmployeeModel = 'openai' | 'claude'
+export type EmployeeModel = 'openai' | 'claude' | 'serpapi'
 export type TaskStatus = 'pending' | 'completed' | 'failed'
 export type LogType = 'info' | 'task' | 'system' | 'error'
 

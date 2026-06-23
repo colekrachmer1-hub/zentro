@@ -75,6 +75,16 @@ export async function POST(req: NextRequest) {
         error: 'No Anthropic API key found. Add your key in Settings → AI Model API Keys.'
       }, { status: 400 })
     }
+    if (model === 'serpapi' && !serpapiKey) {
+      return NextResponse.json({
+        error: 'No SerpAPI key found. Add your key in Settings → AI Model API Keys.'
+      }, { status: 400 })
+    }
+    if (model === 'serpapi' && !openaiKey) {
+      return NextResponse.json({
+        error: 'SerpAPI brain also requires an OpenAI key to synthesize results. Add it in Settings.'
+      }, { status: 400 })
+    }
 
     // Create pending task record
     const { data: task, error: taskError } = await supabase
@@ -94,10 +104,11 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Failed to create task' }, { status: 500 })
     }
 
-    // SerpAPI web search for Research employees (if key is set)
+    // SerpAPI web search — for Research employees OR SerpAPI brain
     let searchContext = ''
     const isResearch = employee.role === 'Research'
-    if (isResearch && serpapiKey) {
+    const useSearch = model === 'serpapi' || (isResearch && serpapiKey)
+    if (useSearch && serpapiKey) {
       searchContext = await searchWeb(prompt.trim(), serpapiKey)
     }
 
@@ -119,6 +130,24 @@ Complete the task given by the user. Return a clear, structured, and actionable 
     let inputTokens = 0
     let outputTokens = 0
     let costEstimate = 0
+
+    // ── SerpAPI brain (search + GPT-4o-mini synthesis) ──────
+    if (model === 'serpapi') {
+      const openai = new OpenAI({ apiKey: openaiKey })
+      const completion = await openai.chat.completions.create({
+        model: 'gpt-4o-mini',
+        messages: [
+          { role: 'system', content: systemPrompt },
+          { role: 'user', content: prompt.trim() },
+        ],
+        max_tokens: 2000,
+        temperature: 0.7,
+      })
+      response     = completion.choices[0]?.message?.content || ''
+      inputTokens  = completion.usage?.prompt_tokens     || 0
+      outputTokens = completion.usage?.completion_tokens || 0
+      costEstimate = inputTokens * OPENAI_INPUT_COST + outputTokens * OPENAI_OUTPUT_COST
+    }
 
     // ── OpenAI ──────────────────────────────────────────────
     if (model === 'openai') {
@@ -177,8 +206,8 @@ Complete the task given by the user. Return a clear, structured, and actionable 
       .eq('id', employeeId)
 
     // Log activity
-    const modelLabel = model === 'claude' ? 'Claude' : 'GPT-4o-mini'
-    const searchLabel = searchContext ? ' + SerpAPI' : ''
+    const modelLabel = model === 'claude' ? 'Claude' : model === 'serpapi' ? 'SerpAPI' : 'GPT-4o-mini'
+    const searchLabel = searchContext && model !== 'serpapi' ? ' + SerpAPI' : ''
     await supabase.from('activity_logs').insert({
       user_id: user.id,
       employee_id: employeeId,

@@ -41,7 +41,7 @@ export default function EmployeeCard({ employee }: { employee: Employee }) {
       <div className="flex items-center justify-between pt-3 border-t border-gray-50">
         <div className="flex items-center gap-1.5 text-xs text-gray-400">
           <span>🧠</span>
-          <span>{employee.model === 'claude' ? 'Claude' : 'GPT-4o'}</span>
+          <span>{employee.model === 'claude' ? 'Claude' : employee.model === 'serpapi' ? 'SerpAPI' : 'GPT-4o'}</span>
         </div>
         <div className="flex items-center gap-1.5">
           <div className="w-16 h-1 bg-gray-100 rounded-full overflow-hidden">

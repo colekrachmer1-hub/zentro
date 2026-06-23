@@ -16,6 +16,7 @@ const employeeTypes = [
 const models = [
   { id: 'openai', label: 'OpenAI', sublabel: 'GPT-4o', icon: '🟢', desc: 'Best for tasks requiring broad knowledge and fast execution.', available: true },
   { id: 'claude', label: 'Claude', sublabel: 'Claude 3.5 Sonnet', icon: '🟣', desc: 'Best for analysis, writing, and nuanced reasoning tasks.', available: true },
+  { id: 'serpapi', label: 'SerpAPI', sublabel: 'Web Search', icon: '🔍', desc: 'Searches Google in real time, then synthesizes results with AI. Requires a SerpAPI key in Settings.', available: true },
   { id: 'gemini', label: 'Gemini', sublabel: 'Coming soon', icon: '🔵', desc: 'Google\'s latest model. Available soon.', available: false },
 ]
 
