@@ -82,7 +82,6 @@ export default async function DashboardPage() {
             <h2 className="font-semibold text-gray-900">Activity Feed</h2>
             <span className="text-xs text-gray-400">{logs.length} recent events</span>
           </div>
-          {/* @ts-expect-error - type mismatch ok at runtime */}
           <ActivityFeed logs={logs} />
         </div>
 
