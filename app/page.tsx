@@ -228,6 +228,121 @@ export default function LandingPage() {
         </div>
       </section>
 
+      {/* ── HOW IT WORKS ── */}
+      <section className="py-24 px-6 bg-gray-50 border-t border-gray-100">
+        <div className="max-w-5xl mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">Up and running in 5 minutes</h2>
+            <p className="text-gray-500 max-w-xl mx-auto">No prompting experience needed. Just pick a role, set a goal, and watch it work.</p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {[
+              {
+                step: '01',
+                title: 'Choose an AI Employee',
+                desc: 'Pick from built-in roles like SDR, Researcher, Support Agent, or Assistant — or create your own.',
+                examples: ['SDR', 'Researcher', 'Assistant', 'Support Agent'],
+              },
+              {
+                step: '02',
+                title: 'Tell it your goal',
+                desc: 'Give your AI employee a clear objective. It figures out what to do and gets started immediately.',
+                examples: ['Book 10 meetings per week', 'Analyze our top competitors', 'Handle all support tickets'],
+              },
+              {
+                step: '03',
+                title: 'Watch it work',
+                desc: 'Your dashboard shows everything in real time — tasks completed, activity feed, and performance scores.',
+                examples: ['Tasks completed', 'Activity feed', 'Performance metrics'],
+              },
+            ].map((s) => (
+              <div key={s.step} className="relative">
+                <div className="text-6xl font-black text-gray-100 mb-4 leading-none">{s.step}</div>
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">{s.title}</h3>
+                <p className="text-sm text-gray-500 mb-4">{s.desc}</p>
+                <div className="flex flex-wrap gap-2">
+                  {s.examples.map((e) => (
+                    <span key={e} className="px-2.5 py-1 bg-white border border-gray-200 rounded-lg text-xs text-gray-600 font-medium">{e}</span>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── REAL EXAMPLES ── */}
+      <section className="py-24 px-6">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">See what AI employees actually do</h2>
+            <p className="text-gray-500 max-w-xl mx-auto">These are real outputs from Zentro AI employees — the kind of work that used to take a full team.</p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {[
+              {
+                name: 'Aria',
+                role: 'AI SDR',
+                goal: 'Book meetings',
+                color: 'bg-blue-100 text-blue-700',
+                dotColor: 'bg-blue-500',
+                tasks: [
+                  { icon: '✓', text: 'Found 73 qualified leads' },
+                  { icon: '✓', text: 'Wrote 73 personalized cold emails' },
+                  { icon: '✓', text: 'Scheduled 4 meetings' },
+                ],
+              },
+              {
+                name: 'Max',
+                role: 'AI Researcher',
+                goal: 'Analyze competitors',
+                color: 'bg-purple-100 text-purple-700',
+                dotColor: 'bg-purple-500',
+                tasks: [
+                  { icon: '✓', text: 'Researched 12 competitors' },
+                  { icon: '✓', text: 'Created market analysis report' },
+                  { icon: '✓', text: 'Identified 5 market opportunities' },
+                ],
+              },
+              {
+                name: 'Nova',
+                role: 'AI Assistant',
+                goal: 'Manage operations',
+                color: 'bg-green-100 text-green-700',
+                dotColor: 'bg-green-500',
+                tasks: [
+                  { icon: '✓', text: 'Organized and updated CRM' },
+                  { icon: '✓', text: 'Sent 28 follow-up emails' },
+                  { icon: '✓', text: 'Generated weekly ops report' },
+                ],
+              },
+            ].map((emp) => (
+              <div key={emp.name} className="card p-6 hover:shadow-md transition-shadow">
+                <div className="flex items-center gap-3 mb-1">
+                  <div className="w-10 h-10 rounded-full bg-brand-100 flex items-center justify-center text-brand-600 font-bold">
+                    {emp.name[0]}
+                  </div>
+                  <div>
+                    <div className="font-semibold text-gray-900 text-sm">{emp.name}</div>
+                    <span className={`badge text-xs ${emp.color}`}>{emp.role}</span>
+                  </div>
+                </div>
+                <p className="text-xs text-gray-400 mb-4 mt-2">Goal: {emp.goal}</p>
+                <div className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">Completed Today</div>
+                <ul className="space-y-2.5">
+                  {emp.tasks.map((t) => (
+                    <li key={t.text} className="flex items-start gap-2 text-sm text-gray-700">
+                      <span className="text-green-500 font-bold mt-0.5">{t.icon}</span>
+                      {t.text}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* ── WHY JOIN EARLY ── */}
       <section className="py-20 px-6 bg-brand-600">
         <div className="max-w-4xl mx-auto text-center">
