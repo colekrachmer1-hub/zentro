@@ -10,7 +10,7 @@ const CLAUDE_OUTPUT_COST = 15.00 / 1_000_000
 
 export async function POST(req: NextRequest) {
   try {
-    const supabase = createClient()
+    const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
@@ -167,7 +167,7 @@ Complete the task given by the user. Return a clear, structured, and actionable 
 
 export async function GET(req: NextRequest) {
   try {
-    const supabase = createClient()
+    const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
