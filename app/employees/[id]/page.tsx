@@ -231,7 +231,6 @@ export default function EmployeeDetailPage() {
           {/* Activity Log */}
           <div className="card p-6">
             <h2 className="font-semibold text-gray-900 mb-5">Activity Log</h2>
-            {/* @ts-expect-error - type mismatch ok at runtime */}
             <ActivityFeed logs={logs} />
           </div>
         </div>
