@@ -8,9 +8,9 @@ import clsx from 'clsx'
 
 const nav = [
   { href: '/dashboard', label: 'Dashboard', icon: '▦' },
-  { href: '/employees', label: 'Employees', icon: '👥' },
+  { href: '/employees', label: 'AI Workers', icon: '👥' },
   { href: '/tasks', label: 'Tasks', icon: '⚡' },
-  { href: '/org', label: 'Org Chart', icon: '🌐' },
+  { href: '/org', label: 'Departments', icon: '🏢' },
 ]
 
 export default function Sidebar() {
@@ -60,7 +60,7 @@ export default function Sidebar() {
           className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-brand-400 hover:text-brand-300 hover:bg-gray-800 transition-colors"
         >
           <span>＋</span>
-          New Employee
+          Add AI Worker
         </Link>
         <button
           onClick={handleSignOut}

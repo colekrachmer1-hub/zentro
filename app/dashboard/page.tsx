@@ -35,18 +35,18 @@ export default async function DashboardPage() {
       {/* Header */}
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
-          <p className="text-sm text-gray-500 mt-1">Your AI workforce at a glance</p>
+          <h1 className="text-2xl font-bold text-gray-900">Workforce Dashboard</h1>
+          <p className="text-sm text-gray-500 mt-1">Your AI operating system at a glance</p>
         </div>
         <Link href="/employees/new" className="btn-primary">
-          + Hire AI Employee
+          + Add AI Worker
         </Link>
       </div>
 
       {/* Stats */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         <StatCard
-          label="AI Employees"
+          label="AI Workers"
           value={employees.length}
           icon="👥"
           color="text-brand-600"
@@ -60,18 +60,18 @@ export default async function DashboardPage() {
           sub={`${tasks.length} total`}
         />
         <StatCard
-          label="AI Cost (Total)"
-          value={`$${totalCost.toFixed(4)}`}
-          icon="💰"
-          color="text-yellow-600"
-          sub="GPT-4o-mini"
+          label="Est. Value Generated"
+          value={completedTasks > 0 ? `$${(completedTasks * 4.2).toLocaleString()}` : '$0'}
+          icon="📈"
+          color="text-purple-600"
+          sub="vs hiring humans"
         />
         <StatCard
-          label="Active Workers"
-          value={activeEmployees}
-          icon="🟢"
-          color="text-emerald-600"
-          sub="working 24/7"
+          label="AI Costs"
+          value={`$${totalCost.toFixed(2)}`}
+          icon="💰"
+          color="text-yellow-600"
+          sub="total spend"
         />
       </div>
 
@@ -89,26 +89,27 @@ export default async function DashboardPage() {
         <div className="space-y-4">
           <div className="card p-6">
             <h2 className="font-semibold text-gray-900 mb-4">Quick Actions</h2>
+
             <div className="space-y-2">
               <Link href="/employees/new" className="btn-secondary w-full justify-center">
-                + Create Employee
+                + Add AI Worker
               </Link>
               <Link href="/tasks" className="btn-secondary w-full justify-center">
-                ⚡ Run Task
+                ⚡ Assign Task
               </Link>
               <Link href="/org" className="btn-secondary w-full justify-center">
-                🌐 View Org Chart
+                🏢 View Departments
               </Link>
             </div>
           </div>
 
           <div className="card p-6">
-            <h2 className="font-semibold text-gray-900 mb-3">Team Overview</h2>
+            <h2 className="font-semibold text-gray-900 mb-3">Workforce</h2>
             {employees.length === 0 ? (
               <div className="text-center py-4">
-                <p className="text-sm text-gray-400 mb-3">No AI employees yet</p>
+                <p className="text-sm text-gray-400 mb-3">No AI workers yet</p>
                 <Link href="/employees/new" className="btn-primary text-xs px-3 py-1.5">
-                  Hire First Employee
+                  Add First Worker
                 </Link>
               </div>
             ) : (
@@ -116,7 +117,7 @@ export default async function DashboardPage() {
                 {employees.slice(0, 5).map((emp) => (
                   <div key={emp.id} className="flex items-center justify-between">
                     <Link href={`/employees/${emp.id}`} className="text-sm text-gray-700 hover:text-brand-600">
-                      Employee
+                      AI Worker
                     </Link>
                     <span className={`badge text-xs ${emp.status === 'active' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'}`}>
                       {emp.status}
@@ -125,7 +126,7 @@ export default async function DashboardPage() {
                 ))}
                 {employees.length > 5 && (
                   <Link href="/employees" className="text-xs text-brand-600 hover:underline">
-                    View all {employees.length} employees →
+                    View all {employees.length} workers →
                   </Link>
                 )}
               </div>
