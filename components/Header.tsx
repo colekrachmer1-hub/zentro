@@ -15,22 +15,17 @@ export default function Header() {
           <Logo href="/" iconSize={28} />
           <nav className="hidden md:flex items-center gap-6 text-sm font-medium text-gray-700">
             <Link href="/jobs" className="hover:text-blue-700 transition-colors">AI Employee Jobs</Link>
-            <Link href="/post-job" className="hover:text-blue-700 transition-colors">Post a Job</Link>
             <Link href="/employers" className="hover:text-blue-700 transition-colors">For Creators</Link>
           </nav>
         </div>
 
         {/* Right actions */}
-        <div className="hidden md:flex items-center gap-4 text-sm font-medium shrink-0">
-          <Link href="/post-job" className="text-gray-700 hover:text-blue-700 transition-colors">
-            Post a Job
-          </Link>
-          <span className="text-gray-300">|</span>
+        <div className="hidden md:flex items-center shrink-0">
           <Link
-            href="/post-ai-employee"
+            href="/post-job"
             className="px-4 py-2 bg-blue-700 text-white rounded-full hover:bg-blue-800 transition-colors text-sm font-semibold"
           >
-            List AI Employee
+            Post a Job / List AI Employee
           </Link>
         </div>
 
