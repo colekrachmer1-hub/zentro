@@ -8,18 +8,19 @@ export default function Header() {
   const [mobileOpen, setMobileOpen] = useState(false)
 
   return (
-    <header className="sticky top-0 z-50 bg-white border-b border-gray-200">
-      <div className="max-w-7xl mx-auto px-4 h-14 flex items-center justify-between gap-6">
+    <header className="sticky top-0 z-50 bg-white border-b border-gray-200 relative">
+      <div className="max-w-7xl mx-auto px-4 h-14 flex items-center">
 
-        {/* Left: Logo + Nav */}
-        <div className="flex items-center gap-8 min-w-0">
+        {/* Logo — left */}
+        <div className="shrink-0">
           <Logo href="/" iconSize={28} />
-          <nav className="hidden md:flex items-center gap-6 text-sm font-medium text-gray-700">
-            <Link href="/employees" className="hover:text-blue-700 transition-colors">Find AI Employees</Link>
-            <Link href="/submit" className="hover:text-blue-700 transition-colors">List AI Employee</Link>
-          </nav>
         </div>
 
+        {/* Nav — true center */}
+        <nav className="hidden md:flex items-center gap-8 text-sm font-medium text-gray-700 absolute left-1/2 -translate-x-1/2">
+          <Link href="/employees" className="hover:text-blue-700 transition-colors">Find AI Employees</Link>
+          <Link href="/submit" className="hover:text-blue-700 transition-colors">List AI Employee</Link>
+        </nav>
 
         {/* Mobile hamburger */}
         <button
