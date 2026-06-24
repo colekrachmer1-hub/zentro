@@ -181,8 +181,8 @@ export default async function EmployeePage({ params }: { params: Promise<{ id: s
                   <p className="text-xs text-gray-400 uppercase tracking-wide font-medium mb-1">Built by</p>
                   <p className="font-semibold text-gray-900">{listing.creator_name}</p>
                   {listing.creator_website && (
-                    <a href={listing.creator_website} target="_blank" rel="noopener noreferrer" className="text-sm text-blue-600 hover:underline">
-                      {listing.creator_website.replace(/^https?:\/\//, '')}
+                    <a href={listing.creator_website} target="_blank" rel="noopener noreferrer" className="text-sm text-blue-600 hover:underline block truncate">
+                      {new URL(listing.creator_website).hostname}
                     </a>
                   )}
                 </div>
