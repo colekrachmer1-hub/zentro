@@ -20,22 +20,22 @@ export default function Footer() {
           <div>
             <h4 className="text-white font-semibold text-xs mb-4 uppercase tracking-wider">For Businesses</h4>
             <ul className="space-y-3 text-sm">
-              <li><Link href="/jobs" className="hover:text-white transition-colors">Find AI Employees</Link></li>
-              <li><Link href="/jobs?category=Sales" className="hover:text-white transition-colors">Sales AI</Link></li>
-              <li><Link href="/jobs?category=Marketing" className="hover:text-white transition-colors">Marketing AI</Link></li>
-              <li><Link href="/jobs?category=Recruiting" className="hover:text-white transition-colors">Recruiting AI</Link></li>
-              <li><Link href="/jobs?category=Research" className="hover:text-white transition-colors">Research AI</Link></li>
+              <li><Link href="/employees" className="hover:text-white transition-colors">Find AI Employees</Link></li>
+              <li><Link href="/employees?category=Sales" className="hover:text-white transition-colors">Sales AI</Link></li>
+              <li><Link href="/employees?category=Marketing" className="hover:text-white transition-colors">Marketing AI</Link></li>
+              <li><Link href="/employees?category=Recruiting" className="hover:text-white transition-colors">Recruiting AI</Link></li>
+              <li><Link href="/employees?category=Research" className="hover:text-white transition-colors">Research AI</Link></li>
             </ul>
           </div>
 
           {/* For Employers */}
           <div>
-            <h4 className="text-white font-semibold text-xs mb-4 uppercase tracking-wider">For Employers</h4>
+            <h4 className="text-white font-semibold text-xs mb-4 uppercase tracking-wider">For Creators</h4>
             <ul className="space-y-3 text-sm">
-              <li><Link href="/employers" className="hover:text-white transition-colors">Zentro For Employers</Link></li>
-              <li><Link href="/post-ai-employee" className="hover:text-white transition-colors">Post an AI Employee</Link></li>
-              <li><Link href="/employers#how-it-works" className="hover:text-white transition-colors">How It Works</Link></li>
-              <li><Link href="/employers#pricing" className="hover:text-white transition-colors">Pricing</Link></li>
+              <li><Link href="/creators" className="hover:text-white transition-colors">List Your AI Employee</Link></li>
+              <li><Link href="/submit" className="hover:text-white transition-colors">Submit AI Employee</Link></li>
+              <li><Link href="/creators" className="hover:text-white transition-colors">How It Works</Link></li>
+              <li><Link href="/post-job" className="hover:text-white transition-colors">Post a Job</Link></li>
             </ul>
           </div>
 

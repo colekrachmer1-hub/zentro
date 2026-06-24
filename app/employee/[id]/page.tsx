@@ -45,7 +45,7 @@ export default async function EmployeePage({ params }: { params: Promise<{ id: s
           <div className="text-5xl mb-4">🤖</div>
           <h1 className="text-2xl font-bold text-gray-900 mb-3">AI Employee Not Found</h1>
           <p className="text-gray-500 mb-6">This listing may have been removed or the link is incorrect.</p>
-          <Link href="/jobs" className="inline-flex px-6 py-3 bg-blue-700 text-white font-semibold rounded-lg hover:bg-blue-800 transition-colors text-sm">
+          <Link href="/employees" className="inline-flex px-6 py-3 bg-blue-700 text-white font-semibold rounded-lg hover:bg-blue-800 transition-colors text-sm">
             Browse AI Employees
           </Link>
         </div>
@@ -70,9 +70,9 @@ export default async function EmployeePage({ params }: { params: Promise<{ id: s
       <div className="max-w-6xl mx-auto px-4 py-8">
         {/* Breadcrumb */}
         <nav className="flex items-center gap-2 text-xs text-gray-500 mb-6">
-          <Link href="/jobs" className="hover:text-blue-700 transition-colors">AI Employees</Link>
+          <Link href="/employees" className="hover:text-blue-700 transition-colors">AI Employees</Link>
           <span>›</span>
-          <Link href={`/jobs?category=${encodeURIComponent(listing.category)}`} className="hover:text-blue-700 transition-colors">{listing.category}</Link>
+          <Link href={`/employees?category=${encodeURIComponent(listing.category)}`} className="hover:text-blue-700 transition-colors">{listing.category}</Link>
           <span>›</span>
           <span className="text-gray-900 truncate">{listing.name}</span>
         </nav>
@@ -114,7 +114,7 @@ export default async function EmployeePage({ params }: { params: Promise<{ id: s
                   rel="noopener noreferrer"
                   className="inline-block px-6 py-3 bg-blue-700 text-white font-semibold rounded-lg hover:bg-blue-800 transition-colors text-sm"
                 >
-                  View AI Employee →
+                  Hire Employee →
                 </a>
               )}
             </div>
@@ -213,7 +213,7 @@ export default async function EmployeePage({ params }: { params: Promise<{ id: s
                   rel="noopener noreferrer"
                   className="block w-full text-center py-3 bg-blue-700 text-white font-semibold rounded-lg hover:bg-blue-800 transition-colors text-sm mb-3"
                 >
-                  View AI Employee →
+                  Hire Employee →
                 </a>
               )}
 

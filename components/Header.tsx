@@ -10,20 +10,26 @@ export default function Header() {
   return (
     <header className="sticky top-0 z-50 bg-white border-b border-gray-200">
       <div className="max-w-7xl mx-auto px-4 h-14 flex items-center justify-between gap-6">
-        {/* Logo + Nav */}
+
+        {/* Left: Logo + Nav */}
         <div className="flex items-center gap-8 min-w-0">
           <Logo href="/" iconSize={28} />
           <nav className="hidden md:flex items-center gap-6 text-sm font-medium text-gray-700">
-            <Link href="/jobs" className="hover:text-blue-700 transition-colors">AI Employee Jobs</Link>
-            <Link href="/employers" className="hover:text-blue-700 transition-colors">For Creators</Link>
+            <Link href="/employees" className="hover:text-blue-700 transition-colors">Find AI Employees</Link>
+            <Link href="/jobs" className="hover:text-blue-700 transition-colors">Open Positions</Link>
+            <Link href="/creators" className="hover:text-blue-700 transition-colors">For Creators</Link>
           </nav>
         </div>
 
-        {/* Right actions */}
-        <div className="hidden md:flex items-center shrink-0">
+        {/* Right */}
+        <div className="hidden md:flex items-center gap-5 text-sm shrink-0">
+          <Link href="/creators" className="text-gray-600 hover:text-blue-700 transition-colors font-medium">
+            Employers
+          </Link>
+          <span className="text-gray-300">|</span>
           <Link
             href="/post-job"
-            className="px-4 py-2 bg-blue-700 text-white rounded-full hover:bg-blue-800 transition-colors text-sm font-semibold"
+            className="px-4 py-2 bg-blue-700 text-white rounded-full font-semibold hover:bg-blue-800 transition-colors text-sm"
           >
             Post a Job / List AI Employee
           </Link>
@@ -51,16 +57,17 @@ export default function Header() {
       {mobileOpen && (
         <div className="absolute top-14 left-0 right-0 bg-white border-b border-gray-200 shadow-lg md:hidden z-50">
           <nav className="flex flex-col px-4 py-4 gap-4 text-sm font-medium text-gray-700">
-            <Link href="/jobs" onClick={() => setMobileOpen(false)} className="hover:text-blue-700">Find AI Employees</Link>
-            <Link href="/employers" onClick={() => setMobileOpen(false)} className="hover:text-blue-700">For Employers</Link>
-            <Link href="/post-ai-employee" onClick={() => setMobileOpen(false)} className="hover:text-blue-700">Post AI Employee</Link>
+            <Link href="/employees" onClick={() => setMobileOpen(false)} className="hover:text-blue-700">Find AI Employees</Link>
+            <Link href="/jobs" onClick={() => setMobileOpen(false)} className="hover:text-blue-700">Open Positions</Link>
+            <Link href="/creators" onClick={() => setMobileOpen(false)} className="hover:text-blue-700">For Creators</Link>
+            <Link href="/submit" onClick={() => setMobileOpen(false)} className="hover:text-blue-700">List AI Employee</Link>
             <hr className="border-gray-100" />
             <Link
-              href="/post-ai-employee"
+              href="/post-job"
               onClick={() => setMobileOpen(false)}
               className="px-4 py-2 text-center text-white bg-blue-700 rounded-full hover:bg-blue-800"
             >
-              Post AI Employee
+              Post a Job / List AI Employee
             </Link>
           </nav>
         </div>
