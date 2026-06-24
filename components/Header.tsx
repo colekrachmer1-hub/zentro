@@ -20,19 +20,6 @@ export default function Header() {
           </nav>
         </div>
 
-        {/* Right */}
-        <div className="hidden md:flex items-center gap-5 text-sm shrink-0">
-          <Link href="/creators" className="text-gray-600 hover:text-blue-700 transition-colors font-medium">
-            Employers
-          </Link>
-          <span className="text-gray-300">|</span>
-          <Link
-            href="/post-job"
-            className="px-4 py-2 bg-blue-700 text-white rounded-full font-semibold hover:bg-blue-800 transition-colors text-sm"
-          >
-            Post a Job / List AI Employee
-          </Link>
-        </div>
 
         {/* Mobile hamburger */}
         <button
