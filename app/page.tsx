@@ -9,15 +9,6 @@ const HERO_CARDS = [
   { name: 'AI Recruiter', provider: 'Built by HirePilot', category: 'Recruiting', rating: 4.7, price: '$129/mo' },
 ]
 
-const OPEN_POSITIONS = [
-  { id: 'mock-1', name: 'AI Lead Agent', provider: 'Monday CRM', category: 'Sales', rating: 4.8, reviews: 120, price: '$49/month', desc: 'Finds, qualifies, and manages leads automatically. Keeps your pipeline full so your team can focus on closing.' },
-  { id: 'mock-2', name: 'AI SDR', provider: 'Lindy AI', category: 'Sales', rating: 4.7, reviews: 89, price: '$79/month', desc: 'Researches prospects, writes personalized outreach, and books meetings on autopilot.' },
-  { id: 'mock-7', name: 'Customer Support Agent AI', provider: 'SupportDesk AI', category: 'Customer Support', rating: 4.6, reviews: 167, price: '$39/month', desc: 'Handles customer questions, complaints, and refunds 24/7. Resolves up to 80% of tickets without human involvement.' },
-  { id: 'mock-5', name: 'AI Recruiter', provider: 'HirePilot AI', category: 'Recruiting', rating: 4.7, reviews: 56, price: '$129/month', desc: 'Sources, screens, and schedules candidates automatically. Cuts time-to-hire by handling top-of-funnel recruiting.' },
-  { id: 'mock-3', name: 'Amazon Product Scout AI', provider: 'SellerOps AI', category: 'Amazon FBA', rating: 4.9, reviews: 203, price: '$99/month', desc: 'Finds profitable Amazon products daily. Analyzes margins, competition, and demand so you can source winners faster.' },
-  { id: 'mock-6', name: 'Market Research Analyst AI', provider: 'InsightBot AI', category: 'Research', rating: 4.8, reviews: 41, price: '$69/month', desc: 'Researches markets, competitors, and trends on demand. Delivers structured reports in minutes, not days.' },
-]
-
 const CATEGORIES = [
   { name: 'Sales', emoji: '📞', count: 24 },
   { name: 'Marketing', emoji: '📣', count: 18 },
@@ -32,19 +23,6 @@ const CATEGORIES = [
 ]
 
 const SUGGESTIONS = ['AI SDR', 'AI Lead Agent', 'AI Recruiter', 'AI Product Scout', 'AI Research Analyst', 'AI Customer Support Agent']
-
-function Stars({ rating }: { rating: number }) {
-  const full = Math.round(rating)
-  return (
-    <span className="flex items-center gap-0.5">
-      {[1, 2, 3, 4, 5].map(s => (
-        <svg key={s} className={`w-3.5 h-3.5 ${s <= full ? 'text-yellow-400' : 'text-gray-200'}`} fill="currentColor" viewBox="0 0 20 20">
-          <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-        </svg>
-      ))}
-    </span>
-  )
-}
 
 export default function HomePage() {
   return (
@@ -121,62 +99,6 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ── OPEN AI EMPLOYEE POSITIONS ── */}
-      <section className="px-4 py-12 border-b border-gray-100">
-        <div className="max-w-7xl mx-auto">
-          <div className="flex items-center justify-between mb-6">
-            <div>
-              <h2 className="text-2xl font-bold text-gray-900">Open AI Employee Positions</h2>
-              <p className="text-sm text-gray-500 mt-0.5">AI employees available to hire right now</p>
-            </div>
-            <Link href="/employees" className="text-sm text-blue-700 hover:underline font-medium hidden sm:block">
-              View all positions →
-            </Link>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {OPEN_POSITIONS.map(pos => (
-              <Link
-                key={pos.id}
-                href={`/employee/${pos.id}`}
-                className="block bg-white border border-gray-200 rounded-lg p-5 hover:shadow-md hover:border-blue-200 transition-all group"
-              >
-                <div className="flex items-start justify-between mb-2">
-                  <div className="flex-1 min-w-0 pr-3">
-                    <h3 className="font-semibold text-blue-700 group-hover:underline text-sm leading-snug">{pos.name}</h3>
-                    <p className="text-sm text-gray-700 mt-0.5">{pos.provider}</p>
-                  </div>
-                  <svg className="w-5 h-5 text-gray-200 hover:text-blue-400 shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
-                  </svg>
-                </div>
-
-                <div className="flex items-center gap-1.5 mb-2">
-                  <Stars rating={pos.rating} />
-                  <span className="text-xs font-semibold text-gray-700">{pos.rating}</span>
-                  <span className="text-xs text-blue-700">({pos.reviews})</span>
-                </div>
-
-                <div className="flex items-center gap-2 text-xs text-gray-500 mb-3">
-                  <span className="bg-green-50 text-green-700 border border-green-100 px-2 py-0.5 rounded font-medium">Remote</span>
-                  <span className="bg-gray-50 text-gray-600 border border-gray-100 px-2 py-0.5 rounded">{pos.category}</span>
-                </div>
-
-                <p className="text-xs text-gray-500 leading-relaxed line-clamp-2 mb-3">{pos.desc}</p>
-
-                <div className="flex items-center justify-between">
-                  <span className="font-bold text-gray-900 text-sm">{pos.price}</span>
-                  <span className="text-xs text-blue-700 font-medium group-hover:underline">View Employee →</span>
-                </div>
-              </Link>
-            ))}
-          </div>
-
-          <div className="mt-6 text-center sm:hidden">
-            <Link href="/employees" className="text-sm text-blue-700 hover:underline font-medium">View all positions →</Link>
-          </div>
-        </div>
-      </section>
 
       {/* ── EXPLORE BY CATEGORY ── */}
       <section className="px-4 py-12 border-b border-gray-100 bg-gray-50">
