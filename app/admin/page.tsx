@@ -21,11 +21,19 @@ interface Listing {
   external_link: string
 }
 
+interface Review {
+  reviewer: string
+  rating: number
+  text: string
+}
+
 const emptyForm = {
   name: '', category: 'Sales', short_description: '', full_description: '',
   what_it_does: '', who_its_for: '', pricing: '', external_link: '',
   creator_name: '', creator_website: '', demo_video_url: '', tags: '',
 }
+
+const emptyReview: Review = { reviewer: '', rating: 5, text: '' }
 
 export default function AdminPage() {
   const [password, setPassword] = useState('')
@@ -37,6 +45,7 @@ export default function AdminPage() {
   const [actionLoading, setActionLoading] = useState<string | null>(null)
   const [showAddForm, setShowAddForm] = useState(false)
   const [form, setForm] = useState(emptyForm)
+  const [reviews, setReviews] = useState<Review[]>([])
   const [addStatus, setAddStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle')
   const [addError, setAddError] = useState('')
 
@@ -93,12 +102,13 @@ export default function AdminPage() {
       const res = await fetch('/api/admin/listings', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(form),
+        body: JSON.stringify({ ...form, reviews }),
       })
       const data = await res.json()
       if (!res.ok) { setAddError(data.error || 'Failed to add.'); setAddStatus('error'); return }
       setAddStatus('saved')
       setForm(emptyForm)
+      setReviews([])
       setShowAddForm(false)
       await fetchListings()
       setAddStatus('idle')
@@ -168,7 +178,7 @@ export default function AdminPage() {
               Refresh
             </button>
             <button
-              onClick={() => { setShowAddForm(!showAddForm); setAddError(''); setAddStatus('idle') }}
+              onClick={() => { setShowAddForm(!showAddForm); setAddError(''); setAddStatus('idle'); if (showAddForm) { setForm(emptyForm); setReviews([]) } }}
               className="px-4 py-2 text-sm bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors"
             >
               {showAddForm ? '✕ Cancel' : '+ Add Listing'}
@@ -232,6 +242,71 @@ export default function AdminPage() {
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Tags <span className="text-gray-400 font-normal">(comma-separated)</span></label>
                 <input value={form.tags} onChange={e => setForm(f => ({ ...f, tags: e.target.value }))} placeholder="Amazon, FBA, Product Research" className="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+              </div>
+            </div>
+
+            {/* Reviews */}
+            <div className="mt-6 pt-5 border-t border-gray-100">
+              <div className="flex items-center justify-between mb-4">
+                <div>
+                  <h3 className="text-sm font-semibold text-gray-900">Reviews <span className="text-gray-400 font-normal">(optional — auto-populates the listing page)</span></h3>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setReviews(r => [...r, { ...emptyReview }])}
+                  className="px-3 py-1.5 text-xs font-medium bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors"
+                >
+                  + Add Review
+                </button>
+              </div>
+              {reviews.length === 0 && (
+                <p className="text-xs text-gray-400 italic">No reviews added. Click &quot;+ Add Review&quot; to add one.</p>
+              )}
+              <div className="space-y-3">
+                {reviews.map((review, i) => (
+                  <div key={i} className="bg-gray-50 border border-gray-100 rounded-xl p-4">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-3">
+                      <div>
+                        <label className="block text-xs font-medium text-gray-600 mb-1">Reviewer Name</label>
+                        <input
+                          value={review.reviewer}
+                          onChange={e => setReviews(r => r.map((rv, idx) => idx === i ? { ...rv, reviewer: e.target.value } : rv))}
+                          placeholder="e.g. Sarah M."
+                          className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-medium text-gray-600 mb-1">Rating</label>
+                        <select
+                          value={review.rating}
+                          onChange={e => setReviews(r => r.map((rv, idx) => idx === i ? { ...rv, rating: Number(e.target.value) } : rv))}
+                          className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                        >
+                          {[5,4,3,2,1].map(n => <option key={n} value={n}>{'⭐'.repeat(n)} ({n}/5)</option>)}
+                        </select>
+                      </div>
+                      <div className="flex items-end">
+                        <button
+                          type="button"
+                          onClick={() => setReviews(r => r.filter((_, idx) => idx !== i))}
+                          className="px-3 py-2 text-xs text-red-600 hover:bg-red-50 border border-red-100 rounded-lg transition-colors w-full"
+                        >
+                          Remove
+                        </button>
+                      </div>
+                    </div>
+                    <div>
+                      <label className="block text-xs font-medium text-gray-600 mb-1">Review Text</label>
+                      <textarea
+                        value={review.text}
+                        onChange={e => setReviews(r => r.map((rv, idx) => idx === i ? { ...rv, text: e.target.value } : rv))}
+                        placeholder="What did they say about it?"
+                        rows={2}
+                        className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white resize-y"
+                      />
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
 

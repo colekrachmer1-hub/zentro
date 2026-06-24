@@ -20,12 +20,17 @@ export async function GET() {
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json()
-    const { name, category, short_description, full_description, what_it_does, who_its_for, pricing, external_link, creator_name, creator_website, demo_video_url, tags } = body
+    const { name, category, short_description, full_description, what_it_does, who_its_for, pricing, external_link, creator_name, creator_website, demo_video_url, tags, reviews } = body
     if (!name || !category || !short_description || !creator_name || !external_link) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
     }
     const slug = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') + '-' + Date.now()
     const tagsArray = tags ? tags.split(',').map((t: string) => t.trim()).filter(Boolean) : []
+    const reviewsArray = Array.isArray(reviews) ? reviews.filter((r: { text: string }) => r.text?.trim()) : []
+    const reviewCount = reviewsArray.length
+    const avgRating = reviewCount > 0
+      ? reviewsArray.reduce((sum: number, r: { rating: number }) => sum + (r.rating || 5), 0) / reviewCount
+      : 0
     const supabase = await createClient()
     const { data, error } = await supabase.from('listings').insert({
       name, slug, category, short_description,
@@ -37,9 +42,10 @@ export async function POST(req: NextRequest) {
       creator_website: creator_website || null,
       demo_video_url: demo_video_url || null,
       tags: tagsArray,
+      reviews: reviewsArray,
       status: 'approved',
-      rating: 0,
-      review_count: 0,
+      rating: reviewCount > 0 ? Math.round(avgRating * 10) / 10 : 0,
+      review_count: reviewCount,
       hire_count: 0,
     }).select().single()
     if (error) return NextResponse.json({ error: error.message }, { status: 500 })
