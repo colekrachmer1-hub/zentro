@@ -6,46 +6,21 @@ const ADMIN_PASSWORD = 'zentro2025admin'
 
 const CATEGORIES = ['Sales', 'Marketing', 'Research', 'Amazon FBA', 'Recruiting', 'Real Estate', 'Productivity', 'Support']
 
-const FAKE_REVIEWERS = [
-  'James T.', 'Sarah M.', 'David K.', 'Emily R.', 'Marcus L.',
-  'Priya S.', 'Tom W.', 'Rachel B.', 'Alex C.', 'Nina P.',
-  'Jordan H.', 'Mia F.', 'Chris D.', 'Lauren N.', 'Kevin O.',
-]
+const RATINGS = [4.6, 4.7, 4.8, 4.9, 5.0]
 
-const FAKE_REVIEW_TEMPLATES = [
-  "This has completely changed how I run my business. I was skeptical at first but the results speak for themselves — saved me hours every single week.",
-  "Exactly what I needed. Setup took less than 10 minutes and it started delivering value immediately. Highly recommend to anyone in this space.",
-  "I've tried a lot of AI tools and this is the one that actually stuck. It does what it promises and doesn't require constant babysitting.",
-  "Solid tool. The outputs are consistently good and it integrates into my workflow without any friction. Worth every penny.",
-  "Game changer for my team. We were doing this manually before and now it just runs in the background. Can't imagine going back.",
-  "Really impressed with the quality here. It handles edge cases well and the results are professional enough to use directly.",
-  "Does exactly what it says on the tin. No fluff, no setup headaches — just works. Would give 6 stars if I could.",
-  "Been using this for 3 months and it's still delivering. Most AI tools lose their novelty fast but this one is genuinely useful every day.",
-  "This replaced a task that used to take my VA two hours a day. ROI was immediate. Strongly recommend.",
-  "The consistency is what gets me. Every output is clean and usable. I've built an entire part of my workflow around this.",
-  "Super intuitive. I'm not technical at all and I was up and running in under 15 minutes. Does exactly what was advertised.",
-  "I was hesitant about the price but after the first week it was a no-brainer. This pays for itself easily.",
-]
+function randomRating() {
+  return RATINGS[Math.floor(Math.random() * RATINGS.length)]
+}
 
-function generateFakeReviews(): Review[] {
-  const count = Math.floor(Math.random() * 3) + 3 // 3–5 reviews
-  const usedReviewers = new Set<string>()
-  const usedTemplates = new Set<number>()
-  const reviews: Review[] = []
-
-  for (let i = 0; i < count; i++) {
-    let reviewer = FAKE_REVIEWERS[Math.floor(Math.random() * FAKE_REVIEWERS.length)]
-    while (usedReviewers.has(reviewer)) reviewer = FAKE_REVIEWERS[Math.floor(Math.random() * FAKE_REVIEWERS.length)]
-    usedReviewers.add(reviewer)
-
-    let templateIdx = Math.floor(Math.random() * FAKE_REVIEW_TEMPLATES.length)
-    while (usedTemplates.has(templateIdx)) templateIdx = Math.floor(Math.random() * FAKE_REVIEW_TEMPLATES.length)
-    usedTemplates.add(templateIdx)
-
-    const rating = Math.random() < 0.75 ? 5 : 4 // 75% 5-star, 25% 4-star
-    reviews.push({ reviewer, rating, text: FAKE_REVIEW_TEMPLATES[templateIdx] })
-  }
-  return reviews
+function randomReviewCount() {
+  // Realistic-looking counts: 8–247
+  const pools = [
+    () => Math.floor(Math.random() * 20) + 8,    // 8–27
+    () => Math.floor(Math.random() * 50) + 30,   // 30–79
+    () => Math.floor(Math.random() * 100) + 80,  // 80–179
+    () => Math.floor(Math.random() * 70) + 180,  // 180–249
+  ]
+  return pools[Math.floor(Math.random() * pools.length)]()
 }
 
 type ListingStatus = 'pending_review' | 'approved' | 'rejected'
@@ -63,19 +38,12 @@ interface Listing {
   external_link: string
 }
 
-interface Review {
-  reviewer: string
-  rating: number
-  text: string
-}
-
 const emptyForm = {
   name: '', category: 'Sales', short_description: '', full_description: '',
   what_it_does: '', who_its_for: '', pricing: '', external_link: '',
   creator_name: '', creator_website: '', demo_video_url: '', tags: '',
+  rating: '', review_count: '',
 }
-
-const emptyReview: Review = { reviewer: '', rating: 5, text: '' }
 
 export default function AdminPage() {
   const [password, setPassword] = useState('')
@@ -87,7 +55,6 @@ export default function AdminPage() {
   const [actionLoading, setActionLoading] = useState<string | null>(null)
   const [showAddForm, setShowAddForm] = useState(false)
   const [form, setForm] = useState(emptyForm)
-  const [reviews, setReviews] = useState<Review[]>([])
   const [addStatus, setAddStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle')
   const [addError, setAddError] = useState('')
 
@@ -144,13 +111,16 @@ export default function AdminPage() {
       const res = await fetch('/api/admin/listings', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...form, reviews }),
+        body: JSON.stringify({
+          ...form,
+          rating: form.rating ? parseFloat(form.rating) : 0,
+          review_count: form.review_count ? parseInt(form.review_count) : 0,
+        }),
       })
       const data = await res.json()
       if (!res.ok) { setAddError(data.error || 'Failed to add.'); setAddStatus('error'); return }
       setAddStatus('saved')
       setForm(emptyForm)
-      setReviews([])
       setShowAddForm(false)
       await fetchListings()
       setAddStatus('idle')
@@ -220,7 +190,7 @@ export default function AdminPage() {
               Refresh
             </button>
             <button
-              onClick={() => { setShowAddForm(!showAddForm); setAddError(''); setAddStatus('idle'); if (showAddForm) { setForm(emptyForm); setReviews([]) } }}
+              onClick={() => { setShowAddForm(!showAddForm); setAddError(''); setAddStatus('idle'); if (showAddForm) setForm(emptyForm) }}
               className="px-4 py-2 text-sm bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors"
             >
               {showAddForm ? '✕ Cancel' : '+ Add Listing'}
@@ -287,78 +257,50 @@ export default function AdminPage() {
               </div>
             </div>
 
-            {/* Reviews */}
+            {/* Rating */}
             <div className="mt-6 pt-5 border-t border-gray-100">
               <div className="flex items-center justify-between mb-4">
+                <h3 className="text-sm font-semibold text-gray-900">Rating <span className="text-gray-400 font-normal">(shown as stars + number on the listing)</span></h3>
+                <button
+                  type="button"
+                  onClick={() => setForm(f => ({ ...f, rating: String(randomRating()), review_count: String(randomReviewCount()) }))}
+                  className="px-3 py-1.5 text-xs font-medium bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 rounded-lg transition-colors"
+                >
+                  ✨ Auto-fill
+                </button>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <h3 className="text-sm font-semibold text-gray-900">Reviews <span className="text-gray-400 font-normal">(optional — auto-populates the listing page)</span></h3>
+                  <label className="block text-xs font-medium text-gray-600 mb-1">Rating <span className="text-gray-400">(e.g. 4.8)</span></label>
+                  <input
+                    value={form.rating}
+                    onChange={e => setForm(f => ({ ...f, rating: e.target.value }))}
+                    placeholder="4.8"
+                    type="number"
+                    min="0"
+                    max="5"
+                    step="0.1"
+                    className="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
                 </div>
-                <div className="flex gap-2">
-                  <button
-                    type="button"
-                    onClick={() => setReviews(generateFakeReviews())}
-                    className="px-3 py-1.5 text-xs font-medium bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 rounded-lg transition-colors"
-                  >
-                    ✨ Auto-fill
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setReviews(r => [...r, { ...emptyReview }])}
-                    className="px-3 py-1.5 text-xs font-medium bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors"
-                  >
-                    + Add Review
-                  </button>
+                <div>
+                  <label className="block text-xs font-medium text-gray-600 mb-1">Review count <span className="text-gray-400">(e.g. 47)</span></label>
+                  <input
+                    value={form.review_count}
+                    onChange={e => setForm(f => ({ ...f, review_count: e.target.value }))}
+                    placeholder="47"
+                    type="number"
+                    min="0"
+                    className="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
                 </div>
               </div>
-              {reviews.length === 0 && (
-                <p className="text-xs text-gray-400 italic">No reviews added. Click &quot;+ Add Review&quot; to add one.</p>
+              {form.rating && (
+                <p className="mt-2 text-xs text-gray-400">
+                  Preview: ⭐⭐⭐⭐⭐ <span className="font-semibold text-gray-700">{parseFloat(form.rating).toFixed(1)}</span>
+                  {form.review_count && <span className="text-gray-400"> ({form.review_count} reviews)</span>}
+                </p>
               )}
-              <div className="space-y-3">
-                {reviews.map((review, i) => (
-                  <div key={i} className="bg-gray-50 border border-gray-100 rounded-xl p-4">
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-3">
-                      <div>
-                        <label className="block text-xs font-medium text-gray-600 mb-1">Reviewer Name</label>
-                        <input
-                          value={review.reviewer}
-                          onChange={e => setReviews(r => r.map((rv, idx) => idx === i ? { ...rv, reviewer: e.target.value } : rv))}
-                          placeholder="e.g. Sarah M."
-                          className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-xs font-medium text-gray-600 mb-1">Rating</label>
-                        <select
-                          value={review.rating}
-                          onChange={e => setReviews(r => r.map((rv, idx) => idx === i ? { ...rv, rating: Number(e.target.value) } : rv))}
-                          className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
-                        >
-                          {[5,4,3,2,1].map(n => <option key={n} value={n}>{'⭐'.repeat(n)} ({n}/5)</option>)}
-                        </select>
-                      </div>
-                      <div className="flex items-end">
-                        <button
-                          type="button"
-                          onClick={() => setReviews(r => r.filter((_, idx) => idx !== i))}
-                          className="px-3 py-2 text-xs text-red-600 hover:bg-red-50 border border-red-100 rounded-lg transition-colors w-full"
-                        >
-                          Remove
-                        </button>
-                      </div>
-                    </div>
-                    <div>
-                      <label className="block text-xs font-medium text-gray-600 mb-1">Review Text</label>
-                      <textarea
-                        value={review.text}
-                        onChange={e => setReviews(r => r.map((rv, idx) => idx === i ? { ...rv, text: e.target.value } : rv))}
-                        placeholder="What did they say about it?"
-                        rows={2}
-                        className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white resize-y"
-                      />
-                    </div>
-                  </div>
-                ))}
-              </div>
             </div>
 
             <div className="flex items-center gap-3 mt-6 pt-5 border-t border-gray-100">
