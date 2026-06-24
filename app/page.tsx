@@ -1,396 +1,374 @@
-'use client'
+import Link from 'next/link'
+import ListingCard from '@/components/ListingCard'
 
-import { useState, useEffect } from 'react'
-import { Logo } from '@/components/Logo'
-
-function WaitlistForm({ dark = false }: { dark?: boolean }) {
-  const [email, setEmail] = useState('')
-  const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
-  const [message, setMessage] = useState('')
-
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault()
-    if (!email) return
-    setStatus('loading')
-    try {
-      const res = await fetch('/api/waitlist', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email }),
-      })
-      const data = await res.json()
-      if (data.message === 'success' || data.message?.includes('already')) {
-        setStatus('success')
-        setMessage(data.message === 'success' ? "You're on the list. We'll be in touch soon." : "You're already on the list!")
-        setEmail('')
-      } else throw new Error()
-    } catch {
-      setStatus('error')
-      setMessage('Something went wrong. Try again.')
-    }
-  }
-
-  if (status === 'success') {
-    return (
-      <div className={`flex items-center gap-2 font-medium ${dark ? 'text-emerald-400' : 'text-emerald-600'}`}>
-        <span>✓</span> {message}
-      </div>
-    )
-  }
-
-  return (
-    <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-2 w-full">
-      <input
-        type="email"
-        placeholder="Enter your work email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        required
-        className={`flex-1 px-4 py-3 rounded-xl border text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-          dark
-            ? 'bg-white/10 border-white/20 text-white placeholder-white/40'
-            : 'bg-white border-gray-200 text-gray-900 placeholder-gray-400'
-        }`}
-      />
-      <button
-        type="submit"
-        disabled={status === 'loading'}
-        className="px-6 py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold transition-colors whitespace-nowrap disabled:opacity-60"
-      >
-        {status === 'loading' ? '...' : 'Join Early Access'}
-      </button>
-      {status === 'error' && <p className="text-red-400 text-xs mt-1 w-full">{message}</p>}
-    </form>
-  )
-}
-
-const aiEmployeeTypes = [
-  { role: 'Sales AI', icon: '📞', color: 'bg-blue-50 border-blue-100', iconBg: 'bg-blue-100', iconText: 'text-blue-600', desc: 'Books meetings and generates outreach at scale.' },
-  { role: 'Research AI', icon: '🔍', color: 'bg-purple-50 border-purple-100', iconBg: 'bg-purple-100', iconText: 'text-purple-600', desc: 'Analyzes competitors and surfaces market opportunities.' },
-  { role: 'Marketing AI', icon: '✍️', color: 'bg-pink-50 border-pink-100', iconBg: 'bg-pink-100', iconText: 'text-pink-600', desc: 'Creates content and finds growth trends daily.' },
-  { role: 'Executive Assistant AI', icon: '📋', color: 'bg-emerald-50 border-emerald-100', iconBg: 'bg-emerald-100', iconText: 'text-emerald-600', desc: 'Organizes tasks and prepares weekly summaries.' },
-  { role: 'Support AI', icon: '💬', color: 'bg-orange-50 border-orange-100', iconBg: 'bg-orange-100', iconText: 'text-orange-600', desc: 'Handles customer questions and creates documentation.' },
+const FEATURED_LISTINGS = [
+  {
+    id: 'sample-1',
+    name: 'SalesBot Pro',
+    category: 'Sales',
+    short_description: 'AI-powered cold outreach specialist that books qualified meetings on autopilot for B2B companies.',
+    creator_name: 'GrowthLabs AI',
+    rating: 4.9,
+    review_count: 128,
+    pricing: '$97/mo',
+    tags: ['Cold Email', 'B2B', 'Outreach'],
+  },
+  {
+    id: 'sample-2',
+    name: 'ContentGenius',
+    category: 'Marketing',
+    short_description: 'Generates high-converting blog posts, social content, and ad copy tuned to your brand voice.',
+    creator_name: 'Spark Creative Studio',
+    rating: 4.8,
+    review_count: 94,
+    pricing: '$79/mo',
+    tags: ['SEO', 'Copywriting', 'Social Media'],
+  },
+  {
+    id: 'sample-3',
+    name: 'FBA Scout AI',
+    category: 'Amazon FBA',
+    short_description: 'Finds profitable product opportunities, analyzes competition, and tracks margins for Amazon sellers.',
+    creator_name: 'SellerEdge Tools',
+    rating: 4.7,
+    review_count: 211,
+    pricing: '$149/mo',
+    tags: ['Product Research', 'Amazon', 'FBA'],
+  },
+  {
+    id: 'sample-4',
+    name: 'TalentMatcher AI',
+    category: 'Recruiting',
+    short_description: 'Screens resumes, ranks candidates, and drafts outreach messages to fill roles 5x faster.',
+    creator_name: 'HireIQ Systems',
+    rating: 4.8,
+    review_count: 67,
+    pricing: '$199/mo',
+    tags: ['Resume Screening', 'Recruiting', 'HR'],
+  },
+  {
+    id: 'sample-5',
+    name: 'DealFinder Real Estate AI',
+    category: 'Real Estate',
+    short_description: 'Analyzes MLS data, identifies undervalued properties, and generates investment reports instantly.',
+    creator_name: 'PropTech Labs',
+    rating: 4.6,
+    review_count: 45,
+    pricing: '$129/mo',
+    tags: ['MLS Analysis', 'Investment', 'Real Estate'],
+  },
+  {
+    id: 'sample-6',
+    name: 'DeepResearch AI',
+    category: 'Research',
+    short_description: 'Synthesizes academic papers, market reports, and web sources into clear executive summaries.',
+    creator_name: 'Synthesis AI',
+    rating: 4.9,
+    review_count: 83,
+    pricing: '$59/mo',
+    tags: ['Research', 'Summarization', 'Analysis'],
+  },
 ]
 
-const steps = [
-  { num: '01', title: 'Create an AI Employee', desc: 'Choose a role — Sales AI, Research AI, Marketing AI, Assistant AI, or Support AI.', examples: ['SDR AI', 'Research AI', 'Marketing AI', 'Support AI'] },
-  { num: '02', title: 'Choose a Brain', desc: 'Connect your preferred AI model. Each employee can run on a different model.', examples: ['OpenAI GPT-4o', 'Claude 3.5', 'Gemini (soon)'] },
-  { num: '03', title: 'Define a Goal', desc: 'Give your employee a clear objective. They work toward it autonomously.', examples: ['Book 10 meetings/month', 'Analyze competitors weekly', 'Generate content daily'] },
-  { num: '04', title: 'Run Tasks', desc: 'Assign work. Your AI employee executes and returns structured results.', examples: ['Research competitors', 'Generate outreach', 'Write content'] },
-  { num: '05', title: 'Monitor Activity', desc: 'Every action is logged. See exactly what your AI workforce accomplished today.', examples: ['Tasks completed', 'Costs tracked', 'Performance scored'] },
+const CATEGORIES = [
+  { name: 'Sales', emoji: '📞', count: 48, slug: 'Sales' },
+  { name: 'Marketing', emoji: '📣', count: 62, slug: 'Marketing' },
+  { name: 'Research', emoji: '🔍', count: 35, slug: 'Research' },
+  { name: 'Amazon FBA', emoji: '📦', count: 29, slug: 'Amazon FBA' },
+  { name: 'Recruiting', emoji: '👥', count: 41, slug: 'Recruiting' },
+  { name: 'Real Estate', emoji: '🏠', count: 23, slug: 'Real Estate' },
+  { name: 'Productivity', emoji: '⚡', count: 57, slug: 'Productivity' },
+  { name: 'Support', emoji: '💬', count: 38, slug: 'Support' },
 ]
 
-const activityFeed = [
-  { name: 'Sales AI', action: 'Generated 50 qualified leads', time: '2m ago', color: 'bg-blue-500' },
-  { name: 'Research AI', action: 'Completed competitor analysis', time: '8m ago', color: 'bg-purple-500' },
-  { name: 'Marketing AI', action: 'Created 10 content ideas', time: '22m ago', color: 'bg-pink-500' },
-  { name: 'Executive Assistant AI', action: 'Prepared weekly summary', time: '1h ago', color: 'bg-emerald-500' },
-  { name: 'Support AI', action: 'Resolved 12 support tickets', time: '2h ago', color: 'bg-orange-500' },
+const MOCK_PREVIEW_CARDS = [
+  {
+    name: 'ColdEmail AI',
+    category: 'Sales',
+    tagline: 'Books 30+ meetings/mo on autopilot',
+    price: '$97/mo',
+    rating: 4.9,
+    badge: 'bg-blue-100 text-blue-700',
+  },
+  {
+    name: 'SEO Writer Pro',
+    category: 'Marketing',
+    tagline: 'Publishes 20 optimized posts/week',
+    price: '$79/mo',
+    rating: 4.8,
+    badge: 'bg-pink-100 text-pink-700',
+  },
+  {
+    name: 'FBA Scout AI',
+    category: 'Amazon FBA',
+    tagline: 'Find $10k/mo product opportunities',
+    price: '$149/mo',
+    rating: 4.7,
+    badge: 'bg-orange-100 text-orange-700',
+  },
 ]
 
 export default function HomePage() {
-  const [count, setCount] = useState(0)
-
-  useEffect(() => {
-    fetch('/api/waitlist').then(r => r.json()).then(d => setCount(d.count || 0))
-  }, [])
-
   return (
-    <div className="min-h-screen bg-white text-gray-900 antialiased">
-
-      {/* NAV */}
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-md border-b border-gray-100">
-        <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
-          <Logo iconSize={28} textColor="#0f172a" />
-          <div className="hidden md:flex items-center gap-8 text-sm text-gray-500">
-            <a href="#employees" className="hover:text-gray-900 transition-colors">AI Employees</a>
-            <a href="#how" className="hover:text-gray-900 transition-colors">How it works</a>
-            <a href="#future" className="hover:text-gray-900 transition-colors">Vision</a>
-          </div>
-          <a href="#waitlist" className="px-4 py-2 rounded-lg bg-blue-600 text-white text-sm font-medium hover:bg-blue-700 transition-colors">
-            Join Early Access
-          </a>
-        </div>
-      </nav>
-
+    <div>
       {/* HERO */}
-      <section className="pt-40 pb-28 px-6" id="waitlist">
-        <div className="max-w-4xl mx-auto text-center">
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-gray-200 text-gray-500 text-xs font-medium mb-8">
-            <span className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse" />
-            {count > 0 ? `${count.toLocaleString()} people on the waitlist` : 'Now in early access — limited spots'}
+      <section className="py-24 px-4 text-center bg-white">
+        <div className="max-w-4xl mx-auto">
+          <div className="inline-flex items-center gap-2 bg-blue-50 border border-blue-100 text-blue-700 text-sm font-medium px-4 py-2 rounded-full mb-8">
+            🚀 The AI Employee Marketplace
           </div>
 
-          <h1 className="text-6xl md:text-7xl font-bold text-gray-900 tracking-tight leading-[1.05] mb-6">
-            Build Your<br />
-            <span className="bg-gradient-to-r from-blue-600 via-blue-500 to-purple-600 bg-clip-text text-transparent">AI Workforce.</span>
+          <h1 className="text-5xl md:text-6xl font-extrabold text-gray-900 tracking-tight leading-tight mb-6">
+            Hire AI Employees<br />
+            <span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+              Built By Experts
+            </span>
           </h1>
 
-          <p className="text-xl text-gray-500 max-w-2xl mx-auto mb-10 leading-relaxed">
-            Create AI employees powered by OpenAI and Claude. Organize them into departments, assign goals, and manage all your AI work from one place.
+          <p className="text-xl text-gray-600 max-w-2xl mx-auto mb-10">
+            Find specialized AI workers for sales, marketing, research, recruiting, Amazon FBA, real estate, and more.
           </p>
 
-          <div className="max-w-lg mx-auto mb-5">
-            <WaitlistForm />
+          <div className="flex flex-col sm:flex-row gap-4 justify-center mb-6">
+            <Link
+              href="/explore"
+              className="px-8 py-4 bg-blue-600 text-white font-semibold rounded-xl hover:bg-blue-700 transition-colors text-base"
+            >
+              Browse AI Employees
+            </Link>
+            <Link
+              href="/submit"
+              className="px-8 py-4 border-2 border-gray-300 text-gray-700 font-semibold rounded-xl hover:border-gray-400 hover:bg-gray-50 transition-colors text-base"
+            >
+              List Your AI Employee
+            </Link>
           </div>
-          <p className="text-xs text-gray-400">Free to join · No credit card required · Founding member pricing locked in</p>
 
-          {/* Dashboard preview */}
-          <div className="mt-20 rounded-2xl border border-gray-200 overflow-hidden shadow-2xl shadow-gray-100/80 text-left">
-            <div className="bg-gray-50 border-b border-gray-200 px-4 py-3 flex items-center gap-2">
-              <div className="flex gap-1.5">
-                <div className="w-3 h-3 rounded-full bg-red-400" />
-                <div className="w-3 h-3 rounded-full bg-yellow-400" />
-                <div className="w-3 h-3 rounded-full bg-green-400" />
-              </div>
-              <span className="text-gray-400 text-xs font-mono ml-2">zentro.app/dashboard</span>
-            </div>
-            <div className="flex bg-white" style={{ minHeight: 380 }}>
-              {/* Sidebar */}
-              <div className="w-44 bg-gray-950 flex-shrink-0 p-4">
-                <div className="text-xs font-semibold text-white/40 uppercase tracking-widest mb-5">Zentro</div>
-                {['Dashboard', 'AI Workers', 'Departments', 'Tasks', 'Activity'].map((item, i) => (
-                  <div key={item} className={`text-xs px-3 py-2 rounded-lg mb-1 font-medium ${i === 0 ? 'bg-blue-600 text-white' : 'text-white/40'}`}>
-                    {item}
-                  </div>
-                ))}
-                <div className="mt-4 text-xs px-3 py-2 text-white/20">Marketplace</div>
-                <div className="text-xs px-3 text-white/20">Coming Soon</div>
-              </div>
-              {/* Main */}
-              <div className="flex-1 p-6 overflow-hidden">
-                <div className="flex items-center justify-between mb-5">
-                  <div>
-                    <div className="text-sm font-bold text-gray-900">Workforce Dashboard</div>
-                    <div className="text-xs text-gray-400">5 AI employees · all active</div>
-                  </div>
-                  <div className="text-xs px-3 py-1.5 bg-blue-600 text-white rounded-lg font-medium">+ Add AI Worker</div>
-                </div>
-                <div className="grid grid-cols-4 gap-3 mb-5">
-                  {[
-                    { label: 'AI Workers', value: '5', color: 'text-blue-600' },
-                    { label: 'Tasks Done', value: '142', color: 'text-emerald-600' },
-                    { label: 'Est. Value', value: '$596', color: 'text-purple-600' },
-                    { label: 'AI Cost', value: '$2.40', color: 'text-gray-600' },
-                  ].map(s => (
-                    <div key={s.label} className="rounded-xl border border-gray-100 p-3">
-                      <div className={`text-lg font-bold ${s.color}`}>{s.value}</div>
-                      <div className="text-xs text-gray-400">{s.label}</div>
-                    </div>
-                  ))}
-                </div>
-                <div className="grid grid-cols-5 gap-4">
-                  <div className="col-span-3 space-y-2">
-                    <div className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-2">AI Workers</div>
-                    {[
-                      { name: 'Sales AI', brain: 'GPT-4o', status: 'Generating leads...' },
-                      { name: 'Research AI', brain: 'Claude', status: 'Analyzing market...' },
-                      { name: 'Marketing AI', brain: 'GPT-4o', status: 'Writing content...' },
-                    ].map(w => (
-                      <div key={w.name} className="flex items-center gap-2 p-2 rounded-lg border border-gray-100">
-                        <div className="w-6 h-6 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 text-xs font-bold">{w.name[0]}</div>
-                        <span className="text-xs font-medium text-gray-700 flex-1">{w.name}</span>
-                        <span className="text-xs text-gray-400 bg-gray-50 px-2 py-0.5 rounded">{w.brain}</span>
-                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-                      </div>
-                    ))}
-                  </div>
-                  <div className="col-span-2">
-                    <div className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-2">Activity</div>
-                    {activityFeed.slice(0, 4).map((a, i) => (
-                      <div key={i} className="flex items-start gap-1.5 mb-2">
-                        <div className={`w-1.5 h-1.5 rounded-full mt-1 flex-shrink-0 ${a.color}`} />
-                        <div className="text-xs text-gray-500 leading-tight">{a.name} — {a.action}</div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+          <p className="text-sm text-gray-400">
+            500+ AI employees listed · Trusted by 10,000+ businesses
+          </p>
 
-      {/* MEET YOUR AI EMPLOYEES */}
-      <section className="py-28 px-6 bg-gray-50 border-y border-gray-100" id="employees">
-        <div className="max-w-5xl mx-auto">
-          <div className="text-center mb-16">
-            <div className="text-blue-600 text-sm font-semibold uppercase tracking-wide mb-3">Meet your team</div>
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">Your AI Employees</h2>
-            <p className="text-gray-500 text-lg max-w-2xl mx-auto">Every role you need. Powered by the best AI models. Working 24/7.</p>
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {aiEmployeeTypes.map((emp) => (
-              <div key={emp.role} className={`rounded-2xl border p-6 ${emp.color}`}>
-                <div className={`w-11 h-11 rounded-xl ${emp.iconBg} ${emp.iconText} flex items-center justify-center text-xl mb-4`}>
-                  {emp.icon}
+          {/* Hero visual: mock preview cards */}
+          <div className="mt-16 grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-3xl mx-auto">
+            {MOCK_PREVIEW_CARDS.map((card, i) => (
+              <div
+                key={i}
+                className="bg-white border border-gray-100 rounded-2xl p-5 shadow-lg text-left"
+                style={{ transform: i === 1 ? 'translateY(-8px)' : undefined }}
+              >
+                <span className={`text-xs font-medium px-2.5 py-1 rounded-full ${card.badge}`}>
+                  {card.category}
+                </span>
+                <h3 className="font-semibold text-gray-900 mt-3 mb-1">{card.name}</h3>
+                <p className="text-xs text-gray-500 mb-3">{card.tagline}</p>
+                <div className="flex items-center justify-between">
+                  <span className="font-bold text-sm text-gray-900">{card.price}</span>
+                  <div className="flex items-center gap-1 text-xs text-gray-500">
+                    <span className="text-yellow-400">★</span>
+                    {card.rating}
+                  </div>
                 </div>
-                <div className="font-semibold text-gray-900 mb-2">{emp.role}</div>
-                <p className="text-sm text-gray-500 leading-relaxed">{emp.desc}</p>
               </div>
             ))}
-            {/* Add your own */}
-            <div className="rounded-2xl border border-dashed border-gray-200 p-6 flex flex-col items-center justify-center text-center bg-white">
-              <div className="w-11 h-11 rounded-xl bg-gray-100 flex items-center justify-center text-xl mb-4">＋</div>
-              <div className="font-semibold text-gray-700 mb-1">Custom AI Employee</div>
-              <p className="text-sm text-gray-400">Define any role with a custom goal and system prompt.</p>
-            </div>
           </div>
-        </div>
-      </section>
-
-      {/* THE FUTURE OF WORK */}
-      <section className="py-28 px-6 bg-gray-950" id="future">
-        <div className="max-w-5xl mx-auto">
-          <div className="text-center mb-16">
-            <div className="text-blue-400 text-sm font-semibold uppercase tracking-wide mb-3">The future of work</div>
-            <h2 className="text-4xl font-bold text-white mb-6">Every company will eventually have<br />human and AI employees working together.</h2>
-            <p className="text-gray-400 text-lg max-w-2xl mx-auto">Zentro is where they are managed. One dashboard for your entire workforce — human and AI, side by side.</p>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="rounded-2xl border border-gray-800 bg-gray-900 p-8">
-              <div className="text-gray-500 text-xs font-semibold uppercase tracking-widest mb-6">Human Employees</div>
-              <div className="space-y-3">
-                {['CEO', 'Head of Sales', 'Marketing Manager', 'Customer Success'].map(role => (
-                  <div key={role} className="flex items-center gap-3 p-3 rounded-xl bg-gray-800">
-                    <div className="w-8 h-8 rounded-full bg-gray-700 flex items-center justify-center text-gray-400 text-xs font-bold">
-                      {role[0]}
-                    </div>
-                    <span className="text-sm text-gray-300">{role}</span>
-                    <span className="ml-auto text-xs text-gray-500">Human</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-            <div className="rounded-2xl border border-blue-500/30 bg-gradient-to-br from-blue-950/60 to-purple-950/60 p-8">
-              <div className="text-blue-400 text-xs font-semibold uppercase tracking-widest mb-6">AI Employees</div>
-              <div className="space-y-3">
-                {[
-                  { name: 'Sales AI', brain: 'GPT-4o', status: 'Active' },
-                  { name: 'Research AI', brain: 'Claude', status: 'Active' },
-                  { name: 'Marketing AI', brain: 'GPT-4o', status: 'Active' },
-                  { name: 'Support AI', brain: 'Claude', status: 'Active' },
-                ].map(emp => (
-                  <div key={emp.name} className="flex items-center gap-3 p-3 rounded-xl bg-white/5 border border-white/5">
-                    <div className="w-8 h-8 rounded-full bg-blue-900 flex items-center justify-center text-blue-400 text-xs font-bold">
-                      {emp.name[0]}
-                    </div>
-                    <span className="text-sm text-white">{emp.name}</span>
-                    <span className="text-xs text-blue-400 bg-blue-950 px-2 py-0.5 rounded">{emp.brain}</span>
-                    <span className="ml-auto flex items-center gap-1 text-xs text-emerald-400">
-                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                      {emp.status}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-          <p className="text-center text-gray-600 text-sm mt-8">Zentro is the operating system for this new workforce.</p>
         </div>
       </section>
 
       {/* HOW IT WORKS */}
-      <section className="py-28 px-6" id="how">
-        <div className="max-w-5xl mx-auto">
-          <div className="text-center mb-16">
-            <div className="text-blue-600 text-sm font-semibold uppercase tracking-wide mb-3">How it works</div>
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">From zero to AI workforce in minutes.</h2>
-            <p className="text-gray-500 text-lg">No technical setup. No prompt engineering. Just create, assign, and go.</p>
+      <section className="bg-gray-50 py-20 px-4">
+        <div className="max-w-6xl mx-auto">
+          <h2 className="text-3xl font-bold text-center text-gray-900 mb-12">How It Works</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+            {/* For Buyers */}
+            <div>
+              <h3 className="text-lg font-bold text-gray-900 mb-6 flex items-center gap-2">
+                <span className="w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center text-sm font-bold">B</span>
+                For Buyers
+              </h3>
+              <div className="space-y-6">
+                {[
+                  { step: 1, icon: '🔍', title: 'Browse the Marketplace', desc: 'Search by category, use case, or keyword to find the right AI employee for your business.' },
+                  { step: 2, icon: '👀', title: 'Review & Compare', desc: 'Read descriptions, check ratings, and compare pricing from expert AI creators.' },
+                  { step: 3, icon: '🚀', title: 'Hire & Deploy', desc: 'Click Hire Employee to go directly to the creator\'s platform and get started immediately.' },
+                ].map((item) => (
+                  <div key={item.step} className="flex gap-4">
+                    <div className="w-10 h-10 bg-white border border-gray-200 rounded-xl flex items-center justify-center text-lg shrink-0 shadow-sm">
+                      {item.icon}
+                    </div>
+                    <div>
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className="text-xs font-bold text-blue-600 uppercase tracking-wide">Step {item.step}</span>
+                      </div>
+                      <h4 className="font-semibold text-gray-900 mb-1">{item.title}</h4>
+                      <p className="text-sm text-gray-600">{item.desc}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* For Creators */}
+            <div>
+              <h3 className="text-lg font-bold text-gray-900 mb-6 flex items-center gap-2">
+                <span className="w-8 h-8 bg-indigo-600 text-white rounded-full flex items-center justify-center text-sm font-bold">C</span>
+                For Creators
+              </h3>
+              <div className="space-y-6">
+                {[
+                  { step: 1, icon: '✍️', title: 'Submit Your AI Employee', desc: 'Fill out a simple form describing your AI employee, its capabilities, pricing, and your external link.' },
+                  { step: 2, icon: '✅', title: 'Get Approved in 24 Hours', desc: 'Our team reviews every submission to ensure quality. You\'ll hear back within one business day.' },
+                  { step: 3, icon: '💰', title: 'Get Discovered & Earn', desc: 'Your listing goes live to thousands of businesses actively searching for AI employees like yours.' },
+                ].map((item) => (
+                  <div key={item.step} className="flex gap-4">
+                    <div className="w-10 h-10 bg-white border border-gray-200 rounded-xl flex items-center justify-center text-lg shrink-0 shadow-sm">
+                      {item.icon}
+                    </div>
+                    <div>
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className="text-xs font-bold text-indigo-600 uppercase tracking-wide">Step {item.step}</span>
+                      </div>
+                      <h4 className="font-semibold text-gray-900 mb-1">{item.title}</h4>
+                      <p className="text-sm text-gray-600">{item.desc}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
-          <div className="space-y-4">
-            {steps.map((s, i) => (
-              <div key={s.num} className="flex gap-6 p-6 rounded-2xl border border-gray-100 hover:border-gray-200 hover:shadow-sm transition-all items-start">
-                <div className="text-3xl font-black text-gray-100 leading-none w-10 flex-shrink-0">{s.num}</div>
-                <div className="flex-1">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-1">{s.title}</h3>
-                  <p className="text-gray-500 text-sm mb-3">{s.desc}</p>
-                  <div className="flex flex-wrap gap-2">
-                    {s.examples.map(e => (
-                      <span key={e} className="px-2.5 py-1 bg-gray-50 border border-gray-200 rounded-lg text-xs text-gray-600">{e}</span>
-                    ))}
+        </div>
+      </section>
+
+      {/* POPULAR CATEGORIES */}
+      <section className="bg-white py-20 px-4">
+        <div className="max-w-6xl mx-auto">
+          <h2 className="text-3xl font-bold text-center text-gray-900 mb-3">Browse by Category</h2>
+          <p className="text-center text-gray-500 mb-12">Find the right AI employee for every role in your business</p>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {CATEGORIES.map((cat) => (
+              <Link
+                key={cat.slug}
+                href={`/explore?category=${encodeURIComponent(cat.slug)}`}
+                className="group flex items-center justify-between bg-white border border-gray-100 rounded-2xl p-5 hover:border-blue-200 hover:shadow-md transition-all"
+              >
+                <div className="flex items-center gap-3">
+                  <span className="text-2xl">{cat.emoji}</span>
+                  <div>
+                    <div className="font-semibold text-gray-900 text-sm group-hover:text-blue-600 transition-colors">{cat.name}</div>
+                    <div className="text-xs text-gray-400">{cat.count} employees</div>
                   </div>
                 </div>
-              </div>
+                <svg className="w-4 h-4 text-gray-300 group-hover:text-blue-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
+              </Link>
             ))}
           </div>
         </div>
       </section>
 
-      {/* DASHBOARD PREVIEW — ACTIVITY FEED */}
-      <section className="py-28 px-6 bg-gray-50 border-y border-gray-100">
-        <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
-          <div>
-            <div className="text-blue-600 text-sm font-semibold uppercase tracking-wide mb-4">Full visibility</div>
-            <h2 className="text-4xl font-bold text-gray-900 mb-6 leading-tight">Know exactly what your AI team did today.</h2>
-            <p className="text-gray-500 text-lg mb-8 leading-relaxed">Every task, output, and cost is logged automatically. No more guessing if your AI tools are actually working.</p>
-            <div className="space-y-3">
-              {['Real-time activity feed', 'Cost tracking per employee', 'Performance scoring', 'Task history & outputs'].map(f => (
-                <div key={f} className="flex items-center gap-2 text-gray-700 text-sm">
-                  <span className="text-blue-500">✓</span> {f}
-                </div>
-              ))}
+      {/* FEATURED LISTINGS */}
+      <section className="bg-gray-50 py-20 px-4">
+        <div className="max-w-6xl mx-auto">
+          <div className="flex items-center justify-between mb-10">
+            <div>
+              <h2 className="text-3xl font-bold text-gray-900 mb-2">Featured AI Employees</h2>
+              <p className="text-gray-500">Top-rated AI workers trusted by thousands of businesses</p>
             </div>
+            <Link href="/explore" className="text-blue-600 font-medium hover:text-blue-700 transition-colors text-sm hidden md:block">
+              View All AI Employees →
+            </Link>
           </div>
-          <div className="rounded-2xl border border-gray-200 bg-white shadow-sm overflow-hidden">
-            <div className="px-5 py-4 border-b border-gray-100 flex items-center justify-between">
-              <span className="text-sm font-semibold text-gray-900">Activity Feed</span>
-              <span className="flex items-center gap-1.5 text-xs text-emerald-500 font-medium">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                Live
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+            {FEATURED_LISTINGS.map((listing) => (
+              <ListingCard key={listing.id} listing={listing} />
+            ))}
+          </div>
+          <div className="text-center mt-8 md:hidden">
+            <Link href="/explore" className="text-blue-600 font-medium hover:text-blue-700">
+              View All AI Employees →
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* WHY LIST ON ZENTRO */}
+      <section className="bg-gray-950 py-20 px-4">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold text-white mb-4">Sell Your AI Employee on Zentro</h2>
+            <p className="text-gray-400 text-lg max-w-xl mx-auto">
+              Join hundreds of creators earning customers by listing their AI employees on the world&apos;s first AI employee marketplace.
+            </p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+            {[
+              { icon: '🌍', title: 'Get Discovered', desc: 'Reach 10,000+ business owners actively searching for AI employees like yours.' },
+              { icon: '🆓', title: 'Free Early Listing', desc: 'List your AI employee at no cost during our launch phase. No commission, no catch.' },
+              { icon: '⭐', title: 'Build Trust with Reviews', desc: 'Verified reviews help buyers trust your AI and drive more conversions.' },
+              { icon: '📈', title: 'Earn More Customers', desc: 'Our marketplace drives qualified traffic directly to your signup or sales page.' },
+            ].map((benefit) => (
+              <div key={benefit.title} className="bg-gray-900 border border-gray-800 rounded-2xl p-6">
+                <div className="text-2xl mb-4">{benefit.icon}</div>
+                <h3 className="text-white font-semibold mb-2">{benefit.title}</h3>
+                <p className="text-gray-400 text-sm leading-relaxed">{benefit.desc}</p>
+              </div>
+            ))}
+          </div>
+          <div className="text-center">
+            <Link
+              href="/submit"
+              className="inline-flex px-8 py-4 bg-blue-600 text-white font-semibold rounded-xl hover:bg-blue-700 transition-colors"
+            >
+              Submit Your AI Employee
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* COMING SOON */}
+      <section className="bg-white py-16 px-4">
+        <div className="max-w-4xl mx-auto text-center">
+          <h3 className="text-xl font-bold text-gray-900 mb-2">Coming Soon</h3>
+          <p className="text-gray-500 text-sm mb-8">We&apos;re building the full platform. Here&apos;s what&apos;s coming next.</p>
+          <div className="flex flex-wrap justify-center gap-3">
+            {[
+              '✅ Verified AI Employees',
+              '⭐ Reviews System',
+              '🔗 Affiliate Tracking',
+              '💸 Revenue Share',
+              '📊 Creator Analytics',
+              '🌟 Featured Listings',
+              '🔔 Buyer Alerts',
+              '📱 Mobile App',
+            ].map((feature) => (
+              <span
+                key={feature}
+                className="px-4 py-2 bg-gray-50 border border-gray-100 text-gray-700 text-sm rounded-full font-medium"
+              >
+                {feature}
               </span>
-            </div>
-            <div className="divide-y divide-gray-50">
-              {activityFeed.map((a, i) => (
-                <div key={i} className="flex items-start gap-3 px-5 py-4">
-                  <div className={`w-2 h-2 rounded-full mt-1.5 flex-shrink-0 ${a.color}`} />
-                  <div className="flex-1 min-w-0">
-                    <span className="text-sm font-semibold text-gray-900">{a.name}</span>
-                    <p className="text-sm text-gray-500 mt-0.5">{a.action}</p>
-                  </div>
-                  <span className="text-xs text-gray-400 flex-shrink-0">{a.time}</span>
-                </div>
-              ))}
-            </div>
+            ))}
           </div>
         </div>
       </section>
 
-      {/* EARLY ACCESS CTA */}
-      <section className="py-28 px-6">
-        <div className="max-w-2xl mx-auto text-center">
-          <h2 className="text-4xl font-bold text-gray-900 mb-4">The future workforce starts here.</h2>
-          <p className="text-gray-500 text-lg mb-10">Join the waitlist for early access, founding member pricing, marketplace access, and a direct line to the team.</p>
-          <div className="bg-gray-950 rounded-2xl p-8 mb-6">
-            <div className="grid grid-cols-2 gap-4 mb-8 text-left">
-              {[
-                { icon: '⚡', title: 'Early access', desc: 'First in line when we launch.' },
-                { icon: '🔒', title: 'Founding pricing', desc: 'Locked in forever.' },
-                { icon: '🛒', title: 'Marketplace', desc: 'Hire community-built AI workers.' },
-                { icon: '🎯', title: 'Shape the product', desc: 'Your feedback drives what we build.' },
-              ].map(p => (
-                <div key={p.title} className="flex gap-3">
-                  <span className="text-xl">{p.icon}</span>
-                  <div>
-                    <div className="text-sm font-semibold text-white">{p.title}</div>
-                    <div className="text-xs text-gray-500 mt-0.5">{p.desc}</div>
-                  </div>
-                </div>
-              ))}
-            </div>
-            <WaitlistForm dark />
-          </div>
-          <p className="text-xs text-gray-400">Free to join · No credit card · {count > 0 ? `${count.toLocaleString()} people already waiting` : 'Be among the first'}</p>
+      {/* FINAL CTA */}
+      <section className="bg-gradient-to-r from-blue-600 to-indigo-700 py-20 px-4">
+        <div className="max-w-3xl mx-auto text-center">
+          <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
+            Ready to hire your first AI employee?
+          </h2>
+          <p className="text-blue-100 text-lg mb-10 max-w-xl mx-auto">
+            Browse hundreds of specialized AI workers and find the right one for your business.
+          </p>
+          <Link
+            href="/explore"
+            className="inline-flex px-8 py-4 bg-white text-blue-700 font-bold rounded-xl hover:bg-blue-50 transition-colors text-base"
+          >
+            Browse AI Employees
+          </Link>
         </div>
       </section>
-
-      {/* Footer */}
-      <footer className="py-10 px-6 border-t border-gray-100">
-        <div className="max-w-6xl mx-auto flex items-center justify-between">
-          <Logo iconSize={22} textColor="#0f172a" />
-          <p className="text-xs text-gray-400">© 2025 Zentro · The Operating System for AI Workers</p>
-        </div>
-      </footer>
     </div>
   )
 }
