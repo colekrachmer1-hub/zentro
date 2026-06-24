@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { Logo } from '@/components/Logo'
 
 export default function Footer() {
   return (
@@ -7,8 +8,8 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-10">
           {/* Brand */}
           <div className="md:col-span-1">
-            <div className="font-extrabold text-2xl tracking-tight text-white mb-3">
-              ZENTR<span className="text-blue-400">O</span>
+            <div className="mb-3">
+              <Logo href="/" iconSize={32} textColor="#ffffff" />
             </div>
             <p className="text-sm leading-relaxed">
               The marketplace for AI employees. Discover specialized AI workers built by experts.

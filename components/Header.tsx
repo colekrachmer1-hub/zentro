@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import Link from 'next/link'
+import { Logo } from '@/components/Logo'
 
 export default function Header() {
   const [mobileOpen, setMobileOpen] = useState(false)
@@ -10,10 +10,7 @@ export default function Header() {
     <header className="sticky top-0 z-50 bg-white border-b border-gray-100 h-16 flex items-center">
       <div className="max-w-7xl mx-auto px-4 w-full flex items-center justify-between">
         {/* Logo */}
-        <Link href="/" className="flex items-center gap-1 font-extrabold text-xl tracking-tight text-gray-900">
-          ZENTR
-          <span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">O</span>
-        </Link>
+        <Logo href="/" iconSize={32} />
 
         {/* Desktop Nav */}
         <nav className="hidden md:flex items-center gap-8 text-sm font-medium text-gray-600">
