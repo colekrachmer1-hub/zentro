@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { JobPosting } from '@/lib/mock-job-postings'
 
-const CATEGORIES = ['All', 'Sales', 'Marketing', 'Research', 'Amazon FBA', 'Recruiting', 'Customer Support', 'Real Estate', 'Productivity', 'Finance', 'Operations']
+const CATEGORIES = ['All', 'Sales', 'Marketing', 'Research', 'Amazon FBA', 'Recruiting', 'Customer Support', 'Real Estate', 'Productivity', 'Finance', 'Operations', 'AI Assistants', 'Lead Generation', 'Content Creation']
 
 function timeAgo(days: number) {
   if (days === 0) return 'Today'

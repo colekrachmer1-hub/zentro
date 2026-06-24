@@ -20,6 +20,9 @@ const CATEGORIES = [
   { name: 'Finance', emoji: '💰', count: 8 },
   { name: 'Real Estate', emoji: '🏠', count: 7 },
   { name: 'Productivity', emoji: '⚡', count: 13 },
+  { name: 'AI Assistants', emoji: '🤖', count: 0 },
+  { name: 'Lead Generation', emoji: '🎯', count: 0 },
+  { name: 'Content Creation', emoji: '✍️', count: 0 },
 ]
 
 function Stars({ rating }: { rating: number }) {

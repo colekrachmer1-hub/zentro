@@ -16,6 +16,9 @@ const CATEGORIES = [
   { name: 'Finance', emoji: '💰' },
   { name: 'Real Estate', emoji: '🏠' },
   { name: 'Productivity', emoji: '⚡' },
+  { name: 'AI Assistants', emoji: '🤖' },
+  { name: 'Lead Generation', emoji: '🎯' },
+  { name: 'Content Creation', emoji: '✍️' },
 ]
 
 export default function Header() {
