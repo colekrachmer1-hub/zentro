@@ -16,8 +16,7 @@ export default function Header() {
           <Logo href="/" iconSize={28} />
           <nav className="hidden md:flex items-center gap-6 text-sm font-medium text-gray-700">
             <Link href="/employees" className="hover:text-blue-700 transition-colors">Find AI Employees</Link>
-            <Link href="/jobs" className="hover:text-blue-700 transition-colors">Open Positions</Link>
-            <Link href="/creators" className="hover:text-blue-700 transition-colors">For Creators</Link>
+            <Link href="/submit" className="hover:text-blue-700 transition-colors">List AI Employee</Link>
           </nav>
         </div>
 
