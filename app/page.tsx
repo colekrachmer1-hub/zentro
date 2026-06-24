@@ -255,20 +255,20 @@ export default function HomePage() {
           {/* Stats card */}
           <div className="lg:w-80 bg-white rounded-2xl border border-gray-200 shadow-sm p-8">
             <p className="font-bold text-gray-900 text-lg mb-6">Why creators choose Zentro</p>
-            <div className="space-y-5">
+            <div className="grid grid-cols-2 gap-5 mb-7">
               {[
                 { stat: '10,000+', label: 'Businesses searching monthly' },
-                { stat: '100%', label: 'Free to list' },
-                { stat: '8 categories', label: 'Targeted search filters' },
-                { stat: '24hr', label: 'Average review time' },
+                { stat: 'Free', label: 'Always free to list' },
+                { stat: '10', label: 'Categories with active buyers' },
+                { stat: '24hr', label: 'Average listing review time' },
               ].map(item => (
-                <div key={item.label} className="flex items-center gap-4">
-                  <span className="text-xl font-bold text-blue-700 w-20 shrink-0">{item.stat}</span>
-                  <span className="text-sm text-gray-600">{item.label}</span>
+                <div key={item.label}>
+                  <p className="text-2xl font-bold text-blue-700 leading-none mb-1">{item.stat}</p>
+                  <p className="text-xs text-gray-500 leading-snug">{item.label}</p>
                 </div>
               ))}
             </div>
-            <Link href="/submit" className="block w-full text-center mt-7 py-3 bg-blue-700 text-white font-semibold rounded-lg hover:bg-blue-800 transition-colors text-sm">
+            <Link href="/submit" className="block w-full text-center py-3 bg-blue-700 text-white font-semibold rounded-lg hover:bg-blue-800 transition-colors text-sm">
               List Your AI Employee
             </Link>
           </div>
