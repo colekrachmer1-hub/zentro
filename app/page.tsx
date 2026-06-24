@@ -15,37 +15,29 @@ const CATEGORIES = [
   { name: 'Operations', emoji: '⚙️' },
 ]
 
-const SUGGESTED = ['AI SDR', 'AI Lead Agent', 'AI Product Scout', 'AI Content Creator', 'AI Recruiter', 'AI Research Analyst']
-
-const EXPLORE_ROLES = [
-  { title: 'AI Sales Development Rep', sub: 'Outbound prospecting and meeting booking', href: '/jobs?q=SDR' },
-  { title: 'AI Lead Agent', sub: 'Pipeline management and lead qualification', href: '/jobs?q=Lead+Agent' },
-  { title: 'AI Content Creator', sub: 'Social media, blogs, and ad copy at scale', href: '/jobs?q=Content+Creator' },
-  { title: 'AI Product Researcher', sub: 'Amazon FBA sourcing and opportunity analysis', href: '/jobs?category=Amazon+FBA' },
-  { title: 'AI Recruiter', sub: 'Sourcing, screening, and scheduling candidates', href: '/jobs?category=Recruiting' },
-  { title: 'AI Research Analyst', sub: 'Market research and competitive intelligence', href: '/jobs?category=Research' },
-  { title: 'AI Customer Support Agent', sub: '24/7 ticket resolution and customer service', href: '/jobs?category=Customer+Support' },
-  { title: 'AI Real Estate Scout', sub: 'Deal finding, comps, and investment analysis', href: '/jobs?category=Real+Estate' },
-  { title: 'AI Operations Manager', sub: 'Workflow automation and process management', href: '/jobs?category=Operations' },
+const RECENT_JOBS = [
+  { title: 'AI Sales Development Representative', company: 'Acme Corp', industry: 'B2B SaaS', budget: '$200–400/mo', id: 'job-1' },
+  { title: 'AI Lead Agent', company: 'GrowthHQ', industry: 'Marketing Agency', budget: '$100–200/mo', id: 'job-2' },
+  { title: 'AI Customer Support Agent', company: 'ShopFast', industry: 'E-commerce', budget: '$75–150/mo', id: 'job-3' },
+  { title: 'AI Amazon Product Scout', company: 'FBA Kings LLC', industry: 'Amazon FBA', budget: '$100–200/mo', id: 'job-4' },
 ]
 
 export default function HomePage() {
   return (
     <div className="min-h-screen bg-white">
-      {/* HERO */}
-      <section className="bg-[#f3f2f0] border-b border-gray-200 py-16 px-4">
-        <div className="max-w-3xl mx-auto text-center">
-          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-3 tracking-tight">
-            Find AI Employees For Your Business
-          </h1>
-          <p className="text-lg text-gray-600 mb-8">
-            Search specialized AI workers for sales, marketing, research, recruiting, Amazon FBA, customer support, real estate, and more.
-          </p>
 
+      {/* HERO — light blue gradient like Indeed */}
+      <section
+        className="px-4 pt-10 pb-14"
+        style={{
+          background: 'linear-gradient(135deg, #dce8ff 0%, #eaf1ff 35%, #f5f8ff 65%, #ffffff 100%)',
+        }}
+      >
+        <div className="max-w-3xl mx-auto">
           {/* Search bar */}
           <form action="/jobs" method="GET">
-            <div className="flex flex-col sm:flex-row bg-white border border-gray-300 rounded-lg shadow-sm overflow-hidden">
-              <div className="flex items-center flex-1 px-4 py-3 gap-3 border-b sm:border-b-0 sm:border-r border-gray-200">
+            <div className="flex flex-col sm:flex-row bg-white border border-gray-300 rounded-lg shadow-md overflow-hidden">
+              <div className="flex items-center flex-1 px-4 py-3.5 gap-3 border-b sm:border-b-0 sm:border-r border-gray-200">
                 <svg className="w-5 h-5 text-gray-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-4.35-4.35M17 11A6 6 0 111 11a6 6 0 0116 0z" />
                 </svg>
@@ -56,40 +48,76 @@ export default function HomePage() {
                   className="flex-1 outline-none text-gray-900 text-sm bg-transparent placeholder-gray-400"
                 />
               </div>
-              <div className="flex items-center flex-1 px-4 py-3 gap-3">
-                <svg className="w-5 h-5 text-gray-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="flex items-center flex-1 px-4 py-3.5 gap-3">
+                <svg className="w-5 h-5 text-blue-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                 </svg>
                 <span className="text-sm text-gray-500 flex-1 text-left">Remote / Online</span>
               </div>
-              <button type="submit" className="bg-blue-700 text-white px-8 py-3 font-semibold hover:bg-blue-800 transition-colors text-sm shrink-0">
+              <button type="submit" className="bg-blue-700 text-white px-7 py-3.5 font-semibold hover:bg-blue-800 transition-colors text-sm shrink-0">
                 Search
               </button>
             </div>
           </form>
 
-          {/* Suggested searches */}
-          <div className="mt-5 text-left">
-            <p className="text-xs text-gray-500 mb-2">Suggested:</p>
-            <div className="flex flex-wrap gap-2">
-              {SUGGESTED.map((s) => (
-                <Link key={s} href={`/jobs?q=${encodeURIComponent(s)}`} className="text-sm text-blue-700 hover:underline bg-white border border-gray-200 px-3 py-1 rounded-full hover:border-blue-300 transition-colors">
-                  {s}
-                </Link>
-              ))}
-            </div>
+          {/* Suggested */}
+          <div className="mt-4 flex flex-wrap items-center gap-x-3 gap-y-2 text-sm">
+            <span className="text-gray-500">Popular:</span>
+            {['AI SDR', 'AI Lead Agent', 'AI Recruiter', 'AI Content Creator', 'AI Support Agent'].map(s => (
+              <Link key={s} href={`/jobs?q=${encodeURIComponent(s)}`} className="text-blue-700 hover:underline">
+                {s}
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* OPEN JOBS SECTION — "Based on your activity" style */}
+      <section className="px-4 py-10 border-b border-gray-100">
+        <div className="max-w-5xl mx-auto">
+          <div className="flex items-center justify-between mb-5">
+            <h2 className="text-lg font-bold text-gray-900">Open AI employee jobs</h2>
+            <Link href="/jobs" className="text-sm text-blue-700 hover:underline">See all jobs</Link>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {RECENT_JOBS.map(job => (
+              <Link
+                key={job.id}
+                href="/jobs"
+                className="block bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md hover:border-blue-300 transition-all"
+              >
+                <div className="flex items-start justify-between gap-3">
+                  <div className="flex-1 min-w-0">
+                    <p className="font-semibold text-sm text-blue-700 leading-snug mb-0.5">{job.title}</p>
+                    <p className="text-sm text-gray-700">{job.company}</p>
+                    <p className="text-xs text-gray-400 mt-0.5">{job.industry}</p>
+                    <div className="flex flex-wrap gap-2 mt-2.5">
+                      <span className="text-xs bg-blue-50 text-blue-700 border border-blue-100 px-2 py-0.5 rounded">Remote</span>
+                      <span className="text-xs bg-green-50 text-green-700 border border-green-100 px-2 py-0.5 rounded">{job.budget}</span>
+                    </div>
+                  </div>
+                  <svg className="w-5 h-5 text-gray-200 shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
+                  </svg>
+                </div>
+              </Link>
+            ))}
           </div>
         </div>
       </section>
 
       {/* CATEGORIES */}
-      <section className="py-12 px-4 bg-white border-b border-gray-100">
+      <section className="px-4 py-10 border-b border-gray-100">
         <div className="max-w-5xl mx-auto">
-          <h2 className="text-xl font-bold text-gray-900 mb-6">Welcome to Zentro</h2>
+          <h2 className="text-lg font-bold text-gray-900 mb-5">Explore by category</h2>
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
             {CATEGORIES.map((cat) => (
-              <Link key={cat.name} href={`/jobs?category=${encodeURIComponent(cat.name)}`} className="flex flex-col items-center gap-2 p-4 bg-white border border-gray-200 rounded-lg hover:border-blue-400 hover:shadow-sm transition-all text-center group">
+              <Link
+                key={cat.name}
+                href={`/jobs?category=${encodeURIComponent(cat.name)}`}
+                className="flex flex-col items-center gap-2 p-4 bg-white border border-gray-200 rounded-lg hover:border-blue-400 hover:shadow-sm transition-all text-center group"
+              >
                 <span className="text-2xl">{cat.emoji}</span>
                 <span className="text-xs font-medium text-gray-700 group-hover:text-blue-700 transition-colors">{cat.name}</span>
               </Link>
@@ -98,84 +126,66 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* HOW IT WORKS */}
-      <section className="py-14 px-4 bg-[#f3f2f0] border-b border-gray-200">
-        <div className="max-w-5xl mx-auto">
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">How Zentro works</h2>
-          <p className="text-gray-500 mb-10">Find and hire AI employees in three steps.</p>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {[
-              { step: '1', title: 'Search AI employees', desc: 'Browse by role, category, or keyword. Filter by price, rating, and use case to find the right AI worker for your business.' },
-              { step: '2', title: 'Review & compare', desc: 'Read full descriptions, check ratings, see what each AI employee does, who it\'s for, and how much it costs.' },
-              { step: '3', title: 'Hire & deploy', desc: 'Click "View AI Employee" to go directly to the provider\'s platform and get started immediately.' },
-            ].map((item) => (
-              <div key={item.step} className="flex gap-4">
-                <div className="w-10 h-10 bg-blue-700 text-white rounded-full flex items-center justify-center font-bold text-sm shrink-0">{item.step}</div>
-                <div>
-                  <h3 className="font-semibold text-gray-900 mb-1">{item.title}</h3>
-                  <p className="text-sm text-gray-600 leading-relaxed">{item.desc}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* EXPLORE ROLES */}
-      <section className="py-14 px-4 bg-white border-b border-gray-100">
-        <div className="max-w-5xl mx-auto">
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">Explore AI employee roles</h2>
-          <p className="text-gray-500 mb-8">Specialized AI workers for every function in your business.</p>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {EXPLORE_ROLES.map((role) => (
-              <Link key={role.title} href={role.href} className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:border-blue-400 hover:shadow-sm transition-all group">
-                <div>
-                  <div className="font-semibold text-sm text-gray-900 group-hover:text-blue-700 transition-colors">{role.title}</div>
-                  <div className="text-xs text-gray-500 mt-0.5">{role.sub}</div>
-                </div>
-                <svg className="w-4 h-4 text-gray-300 group-hover:text-blue-500 transition-colors shrink-0 ml-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                </svg>
-              </Link>
-            ))}
-          </div>
-          <div className="mt-6">
-            <Link href="/jobs" className="text-blue-700 font-medium text-sm hover:underline">Browse all AI employees →</Link>
-          </div>
-        </div>
-      </section>
-
-      {/* FOR EMPLOYERS */}
-      <section className="py-14 px-4 bg-[#f3f2f0] border-b border-gray-200">
+      {/* POST A JOB CTA — Like Indeed's "Employers / Post Job" */}
+      <section className="px-4 py-10 border-b border-gray-100" style={{ background: 'linear-gradient(135deg, #dce8ff 0%, #eaf1ff 60%, #f5f8ff 100%)' }}>
         <div className="max-w-5xl mx-auto flex flex-col md:flex-row gap-10 items-center">
           <div className="flex-1">
-            <p className="text-xs font-semibold text-blue-700 uppercase tracking-wider mb-2">Zentro For Employers</p>
-            <h2 className="text-2xl font-bold text-gray-900 mb-3">Reach businesses looking to hire AI employees</h2>
-            <p className="text-gray-600 mb-6 leading-relaxed">Post your AI employee on Zentro and get discovered by founders, agencies, consultants, and business owners. Free during our founding creator phase.</p>
+            <p className="text-xs font-semibold text-blue-700 uppercase tracking-wider mb-2">For Businesses</p>
+            <h2 className="text-2xl font-bold text-gray-900 mb-3">Need an AI employee?<br />Post the job — free.</h2>
+            <p className="text-gray-600 mb-6 leading-relaxed text-sm">Tell AI creators what you need. They'll apply with the perfect AI employee for your business. Works just like LinkedIn — but for AI workers.</p>
             <div className="flex gap-3 flex-wrap">
-              <Link href="/employers" className="px-5 py-2.5 bg-blue-700 text-white font-semibold rounded-full hover:bg-blue-800 transition-colors text-sm">Learn more</Link>
-              <Link href="/post-ai-employee" className="px-5 py-2.5 border-2 border-blue-700 text-blue-700 font-semibold rounded-full hover:bg-blue-50 transition-colors text-sm">Post AI Employee</Link>
+              <Link href="/post-job" className="px-5 py-2.5 bg-blue-700 text-white font-semibold rounded-lg hover:bg-blue-800 transition-colors text-sm">
+                Post an AI Employee Job
+              </Link>
+              <Link href="/jobs" className="px-5 py-2.5 border border-blue-700 text-blue-700 font-semibold rounded-lg hover:bg-blue-50 transition-colors text-sm">
+                Browse Open Jobs
+              </Link>
             </div>
           </div>
           <div className="md:w-72 bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
-            <p className="font-semibold text-gray-900 mb-4 text-sm">The businesses you&apos;re looking for are here.</p>
+            <p className="font-semibold text-gray-900 mb-1 text-sm">Post your AI employee</p>
+            <p className="text-xs text-gray-500 mb-4">Built an AI employee? List it so businesses can hire you.</p>
             <div className="space-y-3">
               <div>
-                <label className="block text-xs text-gray-500 mb-1">What AI employee are you listing?</label>
-                <div className="px-3 py-2 border border-gray-200 rounded-lg text-sm text-gray-400 bg-gray-50">AI employee name or role</div>
+                <label className="block text-xs text-gray-500 mb-1">AI employee name or role</label>
+                <div className="px-3 py-2 border border-gray-200 rounded-lg text-sm text-gray-300 bg-gray-50">e.g. AI SDR, AI Support Agent</div>
               </div>
               <div>
                 <label className="block text-xs text-gray-500 mb-1">Where does it run?</label>
-                <div className="px-3 py-2 border border-gray-200 rounded-lg text-sm text-gray-400 bg-gray-50">Platform, website, or link</div>
+                <div className="px-3 py-2 border border-gray-200 rounded-lg text-sm text-gray-300 bg-gray-50">Platform or website URL</div>
               </div>
-              <Link href="/post-ai-employee" className="block w-full text-center py-2.5 bg-blue-700 text-white font-semibold rounded-lg hover:bg-blue-800 transition-colors text-sm">Post AI Employee</Link>
+              <Link href="/post-ai-employee" className="block w-full text-center py-2.5 bg-blue-700 text-white font-semibold rounded-lg hover:bg-blue-800 transition-colors text-sm">
+                List AI Employee →
+              </Link>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* HOW IT WORKS */}
+      <section className="py-12 px-4 border-b border-gray-100">
+        <div className="max-w-5xl mx-auto">
+          <h2 className="text-lg font-bold text-gray-900 mb-8">How Zentro works</h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {[
+              { step: '1', title: 'Businesses post jobs', desc: 'Companies post what AI employee role they need filled — just like a regular job listing.' },
+              { step: '2', title: 'Creators apply', desc: 'AI creators and SaaS builders browse postings and apply with their AI employee product.' },
+              { step: '3', title: 'Match made', desc: 'The business gets connected to the right AI employee and hires it for their team.' },
+            ].map((item) => (
+              <div key={item.step} className="flex gap-4">
+                <div className="w-9 h-9 bg-blue-700 text-white rounded-full flex items-center justify-center font-bold text-sm shrink-0">{item.step}</div>
+                <div>
+                  <h3 className="font-semibold text-gray-900 mb-1 text-sm">{item.title}</h3>
+                  <p className="text-sm text-gray-500 leading-relaxed">{item.desc}</p>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </section>
 
       {/* STATS */}
-      <section className="py-12 px-4 bg-white">
+      <section className="py-10 px-4">
         <div className="max-w-5xl mx-auto">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
             {[
@@ -192,6 +202,7 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+
     </div>
   )
 }
