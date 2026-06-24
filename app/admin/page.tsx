@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 
 const ADMIN_PASSWORD = 'zentro2025admin'
 
-const CATEGORIES = ['Sales', 'Marketing', 'Research', 'Amazon FBA', 'Recruiting', 'Real Estate', 'Productivity', 'Support']
+const CATEGORIES = ['Sales', 'Marketing', 'Research', 'Amazon FBA', 'Recruiting', 'Customer Support', 'Real Estate', 'Productivity', 'Finance', 'Operations']
 
 const RATINGS = [4.6, 4.7, 4.8, 4.9, 5.0]
 

@@ -8,37 +8,35 @@ export default function Header() {
   const [mobileOpen, setMobileOpen] = useState(false)
 
   return (
-    <header className="sticky top-0 z-50 bg-white border-b border-gray-100 h-16 flex items-center">
-      <div className="max-w-7xl mx-auto px-4 w-full flex items-center justify-between">
-        {/* Logo */}
-        <Logo href="/" iconSize={32} />
+    <header className="sticky top-0 z-50 bg-white border-b border-gray-200">
+      <div className="max-w-7xl mx-auto px-4 h-14 flex items-center justify-between gap-6">
+        {/* Logo + Nav */}
+        <div className="flex items-center gap-8 min-w-0">
+          <Logo href="/" iconSize={28} />
+          <nav className="hidden md:flex items-center gap-6 text-sm font-medium text-gray-700">
+            <Link href="/jobs" className="hover:text-blue-700 transition-colors">Find AI Employees</Link>
+            <Link href="/jobs" className="hover:text-blue-700 transition-colors">Reviews</Link>
+            <Link href="/employers" className="hover:text-blue-700 transition-colors">Resources</Link>
+          </nav>
+        </div>
 
-        {/* Desktop Nav */}
-        <nav className="hidden md:flex items-center gap-8 text-sm font-medium text-gray-600">
-          <Link href="/explore" className="hover:text-gray-900 transition-colors">Explore</Link>
-          <Link href="/creators" className="hover:text-gray-900 transition-colors">For Creators</Link>
-          <Link href="/submit" className="hover:text-gray-900 transition-colors">Submit Employee</Link>
-        </nav>
-
-        {/* Desktop CTA */}
-        <div className="hidden md:flex items-center gap-3">
-          <Link
-            href="/login"
-            className="px-4 py-2 text-sm font-medium text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
-          >
-            Sign In
+        {/* Right actions */}
+        <div className="hidden md:flex items-center gap-4 text-sm font-medium shrink-0">
+          <Link href="/employers" className="text-gray-700 hover:text-blue-700 transition-colors">
+            Employers
           </Link>
+          <span className="text-gray-300">|</span>
           <Link
-            href="/submit"
-            className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors"
+            href="/post-ai-employee"
+            className="px-4 py-2 bg-blue-700 text-white rounded-full hover:bg-blue-800 transition-colors text-sm font-semibold"
           >
-            List Your AI Employee
+            Post AI Employee
           </Link>
         </div>
 
         {/* Mobile hamburger */}
         <button
-          className="md:hidden p-2 rounded-lg text-gray-600 hover:bg-gray-100"
+          className="md:hidden p-2 text-gray-600 hover:bg-gray-100 rounded-lg"
           onClick={() => setMobileOpen(!mobileOpen)}
           aria-label="Toggle menu"
         >
@@ -54,21 +52,20 @@ export default function Header() {
         </button>
       </div>
 
-      {/* Mobile Menu */}
+      {/* Mobile menu */}
       {mobileOpen && (
-        <div className="absolute top-16 left-0 right-0 bg-white border-b border-gray-100 shadow-lg md:hidden">
+        <div className="absolute top-14 left-0 right-0 bg-white border-b border-gray-200 shadow-lg md:hidden z-50">
           <nav className="flex flex-col px-4 py-4 gap-4 text-sm font-medium text-gray-700">
-            <Link href="/explore" onClick={() => setMobileOpen(false)} className="hover:text-blue-600">Explore</Link>
-            <Link href="/creators" onClick={() => setMobileOpen(false)} className="hover:text-blue-600">For Creators</Link>
-            <Link href="/submit" onClick={() => setMobileOpen(false)} className="hover:text-blue-600">Submit Employee</Link>
+            <Link href="/jobs" onClick={() => setMobileOpen(false)} className="hover:text-blue-700">Find AI Employees</Link>
+            <Link href="/employers" onClick={() => setMobileOpen(false)} className="hover:text-blue-700">For Employers</Link>
+            <Link href="/post-ai-employee" onClick={() => setMobileOpen(false)} className="hover:text-blue-700">Post AI Employee</Link>
             <hr className="border-gray-100" />
-            <Link href="/login" onClick={() => setMobileOpen(false)} className="hover:text-blue-600">Sign In</Link>
             <Link
-              href="/submit"
+              href="/post-ai-employee"
               onClick={() => setMobileOpen(false)}
-              className="px-4 py-2 text-center text-white bg-blue-600 rounded-lg hover:bg-blue-700"
+              className="px-4 py-2 text-center text-white bg-blue-700 rounded-full hover:bg-blue-800"
             >
-              List Your AI Employee
+              Post AI Employee
             </Link>
           </nav>
         </div>
