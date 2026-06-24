@@ -6,6 +6,48 @@ const ADMIN_PASSWORD = 'zentro2025admin'
 
 const CATEGORIES = ['Sales', 'Marketing', 'Research', 'Amazon FBA', 'Recruiting', 'Real Estate', 'Productivity', 'Support']
 
+const FAKE_REVIEWERS = [
+  'James T.', 'Sarah M.', 'David K.', 'Emily R.', 'Marcus L.',
+  'Priya S.', 'Tom W.', 'Rachel B.', 'Alex C.', 'Nina P.',
+  'Jordan H.', 'Mia F.', 'Chris D.', 'Lauren N.', 'Kevin O.',
+]
+
+const FAKE_REVIEW_TEMPLATES = [
+  "This has completely changed how I run my business. I was skeptical at first but the results speak for themselves — saved me hours every single week.",
+  "Exactly what I needed. Setup took less than 10 minutes and it started delivering value immediately. Highly recommend to anyone in this space.",
+  "I've tried a lot of AI tools and this is the one that actually stuck. It does what it promises and doesn't require constant babysitting.",
+  "Solid tool. The outputs are consistently good and it integrates into my workflow without any friction. Worth every penny.",
+  "Game changer for my team. We were doing this manually before and now it just runs in the background. Can't imagine going back.",
+  "Really impressed with the quality here. It handles edge cases well and the results are professional enough to use directly.",
+  "Does exactly what it says on the tin. No fluff, no setup headaches — just works. Would give 6 stars if I could.",
+  "Been using this for 3 months and it's still delivering. Most AI tools lose their novelty fast but this one is genuinely useful every day.",
+  "This replaced a task that used to take my VA two hours a day. ROI was immediate. Strongly recommend.",
+  "The consistency is what gets me. Every output is clean and usable. I've built an entire part of my workflow around this.",
+  "Super intuitive. I'm not technical at all and I was up and running in under 15 minutes. Does exactly what was advertised.",
+  "I was hesitant about the price but after the first week it was a no-brainer. This pays for itself easily.",
+]
+
+function generateFakeReviews(): Review[] {
+  const count = Math.floor(Math.random() * 3) + 3 // 3–5 reviews
+  const usedReviewers = new Set<string>()
+  const usedTemplates = new Set<number>()
+  const reviews: Review[] = []
+
+  for (let i = 0; i < count; i++) {
+    let reviewer = FAKE_REVIEWERS[Math.floor(Math.random() * FAKE_REVIEWERS.length)]
+    while (usedReviewers.has(reviewer)) reviewer = FAKE_REVIEWERS[Math.floor(Math.random() * FAKE_REVIEWERS.length)]
+    usedReviewers.add(reviewer)
+
+    let templateIdx = Math.floor(Math.random() * FAKE_REVIEW_TEMPLATES.length)
+    while (usedTemplates.has(templateIdx)) templateIdx = Math.floor(Math.random() * FAKE_REVIEW_TEMPLATES.length)
+    usedTemplates.add(templateIdx)
+
+    const rating = Math.random() < 0.75 ? 5 : 4 // 75% 5-star, 25% 4-star
+    reviews.push({ reviewer, rating, text: FAKE_REVIEW_TEMPLATES[templateIdx] })
+  }
+  return reviews
+}
+
 type ListingStatus = 'pending_review' | 'approved' | 'rejected'
 type TabFilter = 'all' | 'pending_review' | 'approved' | 'rejected'
 
@@ -251,13 +293,22 @@ export default function AdminPage() {
                 <div>
                   <h3 className="text-sm font-semibold text-gray-900">Reviews <span className="text-gray-400 font-normal">(optional — auto-populates the listing page)</span></h3>
                 </div>
-                <button
-                  type="button"
-                  onClick={() => setReviews(r => [...r, { ...emptyReview }])}
-                  className="px-3 py-1.5 text-xs font-medium bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors"
-                >
-                  + Add Review
-                </button>
+                <div className="flex gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setReviews(generateFakeReviews())}
+                    className="px-3 py-1.5 text-xs font-medium bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 rounded-lg transition-colors"
+                  >
+                    ✨ Auto-fill
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setReviews(r => [...r, { ...emptyReview }])}
+                    className="px-3 py-1.5 text-xs font-medium bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors"
+                  >
+                    + Add Review
+                  </button>
+                </div>
               </div>
               {reviews.length === 0 && (
                 <p className="text-xs text-gray-400 italic">No reviews added. Click &quot;+ Add Review&quot; to add one.</p>
