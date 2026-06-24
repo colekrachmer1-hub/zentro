@@ -13,12 +13,11 @@ function randomRating() {
 }
 
 function randomReviewCount() {
-  // Realistic-looking counts: 8–247
   const pools = [
-    () => Math.floor(Math.random() * 20) + 8,    // 8–27
-    () => Math.floor(Math.random() * 50) + 30,   // 30–79
-    () => Math.floor(Math.random() * 100) + 80,  // 80–179
-    () => Math.floor(Math.random() * 70) + 180,  // 180–249
+    () => Math.floor(Math.random() * 20) + 8,
+    () => Math.floor(Math.random() * 50) + 30,
+    () => Math.floor(Math.random() * 100) + 80,
+    () => Math.floor(Math.random() * 70) + 180,
   ]
   return pools[Math.floor(Math.random() * pools.length)]()
 }
@@ -30,12 +29,20 @@ interface Listing {
   id: string
   name: string
   category: string
+  short_description: string
+  full_description: string
+  what_it_does: string
+  who_its_for: string
+  pricing: string
+  external_link: string
   creator_name: string
+  creator_website: string
+  demo_video_url: string
+  tags: string[]
+  rating: number
+  review_count: number
   status: ListingStatus
   created_at: string
-  pricing: string
-  short_description: string
-  external_link: string
 }
 
 const emptyForm = {
@@ -43,6 +50,27 @@ const emptyForm = {
   what_it_does: '', who_its_for: '', pricing: '', external_link: '',
   creator_name: '', creator_website: '', demo_video_url: '', tags: '',
   rating: '', review_count: '',
+}
+
+type FormState = typeof emptyForm
+
+function listingToForm(l: Listing): FormState {
+  return {
+    name: l.name || '',
+    category: l.category || 'Sales',
+    short_description: l.short_description || '',
+    full_description: l.full_description || '',
+    what_it_does: l.what_it_does || '',
+    who_its_for: l.who_its_for || '',
+    pricing: l.pricing || '',
+    external_link: l.external_link || '',
+    creator_name: l.creator_name || '',
+    creator_website: l.creator_website || '',
+    demo_video_url: l.demo_video_url || '',
+    tags: Array.isArray(l.tags) ? l.tags.join(', ') : '',
+    rating: l.rating ? String(l.rating) : '',
+    review_count: l.review_count ? String(l.review_count) : '',
+  }
 }
 
 export default function AdminPage() {
@@ -53,10 +81,13 @@ export default function AdminPage() {
   const [loading, setLoading] = useState(false)
   const [activeTab, setActiveTab] = useState<TabFilter>('all')
   const [actionLoading, setActionLoading] = useState<string | null>(null)
-  const [showAddForm, setShowAddForm] = useState(false)
-  const [form, setForm] = useState(emptyForm)
-  const [addStatus, setAddStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle')
-  const [addError, setAddError] = useState('')
+
+  // shared add/edit form state
+  const [showForm, setShowForm] = useState(false)
+  const [editingId, setEditingId] = useState<string | null>(null)
+  const [form, setForm] = useState<FormState>(emptyForm)
+  const [formStatus, setFormStatus] = useState<'idle' | 'saving' | 'error'>('idle')
+  const [formError, setFormError] = useState('')
 
   const fetchListings = async () => {
     setLoading(true)
@@ -83,6 +114,60 @@ export default function AdminPage() {
     else setAuthError('Incorrect password.')
   }
 
+  const openAdd = () => {
+    setEditingId(null)
+    setForm(emptyForm)
+    setFormError('')
+    setFormStatus('idle')
+    setShowForm(true)
+  }
+
+  const openEdit = (listing: Listing) => {
+    setEditingId(listing.id)
+    setForm(listingToForm(listing))
+    setFormError('')
+    setFormStatus('idle')
+    setShowForm(true)
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+
+  const closeForm = () => {
+    setShowForm(false)
+    setEditingId(null)
+    setForm(emptyForm)
+    setFormError('')
+    setFormStatus('idle')
+  }
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!form.name || !form.category || !form.short_description || !form.creator_name || !form.external_link) {
+      setFormError('Name, category, short description, creator name, and external link are required.')
+      return
+    }
+    setFormStatus('saving')
+    setFormError('')
+    const payload = {
+      ...form,
+      rating: form.rating ? parseFloat(form.rating) : 0,
+      review_count: form.review_count ? parseInt(form.review_count) : 0,
+    }
+    try {
+      const res = await fetch('/api/admin/listings', {
+        method: editingId ? 'PUT' : 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(editingId ? { id: editingId, ...payload } : payload),
+      })
+      const data = await res.json()
+      if (!res.ok) { setFormError(data.error || 'Failed to save.'); setFormStatus('error'); return }
+      closeForm()
+      await fetchListings()
+    } catch {
+      setFormError('Something went wrong.')
+      setFormStatus('error')
+    }
+  }
+
   const updateStatus = async (id: string, status: ListingStatus) => {
     setActionLoading(id + status)
     try {
@@ -96,37 +181,6 @@ export default function AdminPage() {
       console.error('Failed to update status:', err)
     } finally {
       setActionLoading(null)
-    }
-  }
-
-  const handleAdd = async (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!form.name || !form.category || !form.short_description || !form.creator_name || !form.external_link) {
-      setAddError('Name, category, short description, creator name, and external link are required.')
-      return
-    }
-    setAddStatus('saving')
-    setAddError('')
-    try {
-      const res = await fetch('/api/admin/listings', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          ...form,
-          rating: form.rating ? parseFloat(form.rating) : 0,
-          review_count: form.review_count ? parseInt(form.review_count) : 0,
-        }),
-      })
-      const data = await res.json()
-      if (!res.ok) { setAddError(data.error || 'Failed to add.'); setAddStatus('error'); return }
-      setAddStatus('saved')
-      setForm(emptyForm)
-      setShowAddForm(false)
-      await fetchListings()
-      setAddStatus('idle')
-    } catch {
-      setAddError('Something went wrong.')
-      setAddStatus('error')
     }
   }
 
@@ -189,20 +243,27 @@ export default function AdminPage() {
             <button onClick={fetchListings} className="px-4 py-2 text-sm border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors text-gray-600">
               Refresh
             </button>
-            <button
-              onClick={() => { setShowAddForm(!showAddForm); setAddError(''); setAddStatus('idle'); if (showAddForm) setForm(emptyForm) }}
-              className="px-4 py-2 text-sm bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors"
-            >
-              {showAddForm ? '✕ Cancel' : '+ Add Listing'}
-            </button>
+            {showForm ? (
+              <button onClick={closeForm} className="px-4 py-2 text-sm border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors text-gray-600">
+                ✕ Cancel
+              </button>
+            ) : (
+              <button onClick={openAdd} className="px-4 py-2 text-sm bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors">
+                + Add Listing
+              </button>
+            )}
           </div>
         </div>
 
-        {/* Add Listing Form */}
-        {showAddForm && (
-          <form onSubmit={handleAdd} className="bg-white border border-gray-100 rounded-2xl p-6 mb-8 shadow-sm">
-            <h2 className="text-lg font-bold text-gray-900 mb-6">Add New Listing <span className="text-sm font-normal text-green-600 ml-2">→ Goes live immediately</span></h2>
-            {addError && <div className="mb-4 p-3 bg-red-50 border border-red-100 text-red-700 text-sm rounded-lg">{addError}</div>}
+        {/* Add / Edit Form */}
+        {showForm && (
+          <form onSubmit={handleSubmit} className="bg-white border border-gray-100 rounded-2xl p-6 mb-8 shadow-sm">
+            <h2 className="text-lg font-bold text-gray-900 mb-1">
+              {editingId ? 'Edit Listing' : 'Add New Listing'}
+              {!editingId && <span className="text-sm font-normal text-green-600 ml-2">→ Goes live immediately</span>}
+            </h2>
+            {editingId && <p className="text-xs text-gray-400 mb-5">Changes save immediately and go live.</p>}
+            {formError && <div className="mb-4 p-3 bg-red-50 border border-red-100 text-red-700 text-sm rounded-lg">{formError}</div>}
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
               <div>
@@ -304,10 +365,12 @@ export default function AdminPage() {
             </div>
 
             <div className="flex items-center gap-3 mt-6 pt-5 border-t border-gray-100">
-              <button type="submit" disabled={addStatus === 'saving'} className="px-6 py-2.5 bg-blue-600 text-white font-semibold rounded-xl hover:bg-blue-700 transition-colors disabled:opacity-60">
-                {addStatus === 'saving' ? 'Adding...' : 'Add Listing →'}
+              <button type="submit" disabled={formStatus === 'saving'} className="px-6 py-2.5 bg-blue-600 text-white font-semibold rounded-xl hover:bg-blue-700 transition-colors disabled:opacity-60">
+                {formStatus === 'saving' ? 'Saving...' : editingId ? 'Save Changes →' : 'Add Listing →'}
               </button>
-              <span className="text-xs text-gray-400">Saves directly as Approved and goes live immediately</span>
+              <button type="button" onClick={closeForm} className="px-4 py-2.5 text-sm text-gray-500 hover:text-gray-700 transition-colors">
+                Cancel
+              </button>
             </div>
           </form>
         )}
@@ -334,7 +397,7 @@ export default function AdminPage() {
         ) : filteredListings.length === 0 ? (
           <div className="text-center py-16 bg-white rounded-2xl border border-gray-100">
             <p className="text-gray-400 mb-3">No listings yet.</p>
-            <button onClick={() => setShowAddForm(true)} className="text-sm text-blue-600 hover:underline">Add your first listing →</button>
+            <button onClick={openAdd} className="text-sm text-blue-600 hover:underline">Add your first listing →</button>
           </div>
         ) : (
           <div className="bg-white border border-gray-100 rounded-2xl overflow-hidden shadow-sm">
@@ -345,30 +408,36 @@ export default function AdminPage() {
                     <th className="text-left px-5 py-3.5 font-semibold text-gray-600">Name</th>
                     <th className="text-left px-5 py-3.5 font-semibold text-gray-600">Category</th>
                     <th className="text-left px-5 py-3.5 font-semibold text-gray-600">Creator</th>
-                    <th className="text-left px-5 py-3.5 font-semibold text-gray-600">Link</th>
+                    <th className="text-left px-5 py-3.5 font-semibold text-gray-600">Rating</th>
                     <th className="text-left px-5 py-3.5 font-semibold text-gray-600">Status</th>
                     <th className="text-left px-5 py-3.5 font-semibold text-gray-600">Actions</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-50">
                   {filteredListings.map((listing) => (
-                    <tr key={listing.id} className="hover:bg-gray-50 transition-colors">
+                    <tr key={listing.id} className={`hover:bg-gray-50 transition-colors ${editingId === listing.id ? 'bg-blue-50' : ''}`}>
                       <td className="px-5 py-4">
                         <div className="font-semibold text-gray-900">{listing.name}</div>
                         <div className="text-xs text-gray-400 mt-0.5 max-w-xs truncate">{listing.short_description}</div>
                       </td>
                       <td className="px-5 py-4 text-gray-600">{listing.category}</td>
                       <td className="px-5 py-4 text-gray-600">{listing.creator_name}</td>
-                      <td className="px-5 py-4">
-                        {listing.external_link && (
-                          <a href={listing.external_link} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline text-xs truncate block max-w-[140px]">
-                            {listing.external_link.replace(/^https?:\/\//, '')}
-                          </a>
+                      <td className="px-5 py-4 text-gray-600 text-xs">
+                        {listing.rating > 0 ? (
+                          <span>⭐ {Number(listing.rating).toFixed(1)} <span className="text-gray-400">({listing.review_count})</span></span>
+                        ) : (
+                          <span className="text-gray-300">—</span>
                         )}
                       </td>
                       <td className="px-5 py-4">{statusBadge(listing.status)}</td>
                       <td className="px-5 py-4">
-                        <div className="flex gap-2">
+                        <div className="flex gap-2 flex-wrap">
+                          <button
+                            onClick={() => openEdit(listing)}
+                            className="px-3 py-1.5 bg-gray-100 text-gray-700 text-xs font-medium rounded-lg hover:bg-gray-200 transition-colors"
+                          >
+                            Edit
+                          </button>
                           {listing.status !== 'approved' && (
                             <button onClick={() => updateStatus(listing.id, 'approved')} disabled={actionLoading === listing.id + 'approved'} className="px-3 py-1.5 bg-green-600 text-white text-xs font-medium rounded-lg hover:bg-green-700 disabled:opacity-50">
                               {actionLoading === listing.id + 'approved' ? '...' : 'Approve'}

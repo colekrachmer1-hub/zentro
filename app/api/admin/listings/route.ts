@@ -49,6 +49,33 @@ export async function POST(req: NextRequest) {
   }
 }
 
+export async function PUT(req: NextRequest) {
+  try {
+    const body = await req.json()
+    const { id, name, category, short_description, full_description, what_it_does, who_its_for, pricing, external_link, creator_name, creator_website, demo_video_url, tags, rating, review_count } = body
+    if (!id) return NextResponse.json({ error: 'id required' }, { status: 400 })
+    const tagsArray = tags ? tags.split(',').map((t: string) => t.trim()).filter(Boolean) : []
+    const supabase = await createClient()
+    const { error } = await supabase.from('listings').update({
+      name, category, short_description,
+      full_description: full_description || null,
+      what_it_does: what_it_does || null,
+      who_its_for: who_its_for || null,
+      pricing: pricing || 'Contact for pricing',
+      external_link, creator_name,
+      creator_website: creator_website || null,
+      demo_video_url: demo_video_url || null,
+      tags: tagsArray,
+      rating: rating || 0,
+      review_count: review_count || 0,
+    }).eq('id', id)
+    if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+    return NextResponse.json({ success: true })
+  } catch {
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+  }
+}
+
 export async function PATCH(req: NextRequest) {
   try {
     const { id, status } = await req.json()
