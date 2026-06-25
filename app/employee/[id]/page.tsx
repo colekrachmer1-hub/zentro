@@ -1,8 +1,70 @@
 import { createClient } from '@/lib/supabase/server'
 import { MOCK_LISTINGS, Listing } from '@/lib/mock-listings'
 import Link from 'next/link'
+import { Metadata } from 'next'
 
 export const dynamic = 'force-dynamic'
+
+async function getListing(id: string): Promise<Listing | null> {
+  const mockMatch = MOCK_LISTINGS.find(m => m.id === id)
+  if (mockMatch) return mockMatch
+  try {
+    const supabase = await createClient()
+    const { data } = await supabase.from('listings').select('*').eq('id', id).single()
+    return data ?? null
+  } catch {
+    return null
+  }
+}
+
+export async function generateMetadata(
+  { params }: { params: Promise<{ id: string }> }
+): Promise<Metadata> {
+  const { id } = await params
+  const listing = await getListing(id)
+
+  if (!listing) {
+    return {
+      title: 'AI Employee Not Found | Zentro',
+      description: 'This AI employee listing could not be found on Zentro.',
+    }
+  }
+
+  const title = `${listing.name} – ${listing.creator_name} | Zentro`
+  const description = listing.short_description
+    || `Hire ${listing.name} by ${listing.creator_name}. A specialized AI employee for ${listing.category}. ${listing.pricing} · Remote · Available on Zentro.`
+
+  const url = `https://hirezentro.com/employee/${id}`
+
+  return {
+    title,
+    description,
+    keywords: [
+      listing.name,
+      listing.creator_name,
+      listing.category,
+      'AI employee',
+      'hire AI',
+      'AI worker',
+      ...(listing.tags ?? []),
+    ],
+    openGraph: {
+      title,
+      description,
+      url,
+      siteName: 'Zentro',
+      type: 'website',
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description,
+    },
+    alternates: {
+      canonical: url,
+    },
+  }
+}
 
 function Stars({ rating, size = 'md' }: { rating: number; size?: 'sm' | 'md' }) {
   const full = Math.round(rating)
@@ -20,23 +82,7 @@ function Stars({ rating, size = 'md' }: { rating: number; size?: 'sm' | 'md' }) 
 
 export default async function EmployeePage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  let listing: Listing | Record<string, any> | null = null
-
-  // Check mock first
-  const mockMatch = MOCK_LISTINGS.find(m => m.id === id)
-  if (mockMatch) {
-    listing = mockMatch
-  } else {
-    try {
-      const supabase = await createClient()
-      const { data } = await supabase.from('listings').select('*').eq('id', id).single()
-      listing = data
-    } catch {
-      listing = null
-    }
-  }
+  const listing = await getListing(id)
 
   if (!listing) {
     return (
