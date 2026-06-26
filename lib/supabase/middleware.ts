@@ -31,7 +31,7 @@ export async function updateSession(request: NextRequest) {
 
   const ALLOWED_EMAIL = 'cole.krachmer3@gmail.com'
 
-  const protectedPaths = ['/dashboard', '/employees', '/tasks', '/org']
+  const protectedPaths = ['/dashboard', '/tasks', '/org']
   const isProtected = protectedPaths.some((p) =>
     request.nextUrl.pathname.startsWith(p)
   )
