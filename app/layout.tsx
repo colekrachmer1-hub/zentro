@@ -3,11 +3,10 @@ import Script from 'next/script'
 import { GoogleAnalytics } from '@next/third-parties/google'
 import './globals.css'
 import Header from '@/components/Header'
-import Footer from '@/components/Footer'
 
 export const metadata: Metadata = {
-  title: 'Zentro – Hire AI Employees Built By Experts',
-  description: 'Discover specialized AI workers for sales, marketing, research, recruiting, Amazon FBA, real estate, and more.',
+  title: 'Zentro – The App Store for AI Agents',
+  description: 'Browse production-ready AI agents, customize them with your business, and launch in minutes. No code. No developers.',
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -16,7 +15,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className="bg-white text-gray-900 antialiased">
         <Header />
         <main>{children}</main>
-        <Footer />
         <Script
           id="clarity-init"
           strategy="afterInteractive"
